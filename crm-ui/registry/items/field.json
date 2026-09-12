@@ -1,0 +1,15 @@
+{
+  "name": "field",
+  "type": "component",
+  "description": "Input, Select, Textarea, Switch, Field, FieldRow.",
+  "registryDependencies": [
+    "cn"
+  ],
+  "files": [
+    {
+      "path": "Field.tsx",
+      "target": "components",
+      "content": "import {\n  InputHTMLAttributes,\n  LabelHTMLAttributes,\n  ReactNode,\n  SelectHTMLAttributes,\n  TextareaHTMLAttributes,\n} from 'react';\nimport { cn } from './cn';\n\nconst inputBase =\n  'w-full rounded-ds border border-line2 bg-surface px-2.5 py-2 text-base text-tx outline-none placeholder:text-tx4 focus:border-tx3';\n\nexport function Input(props: InputHTMLAttributes<HTMLInputElement>) {\n  return <input {...props} className={cn(inputBase, props.className)} />;\n}\n\nexport function Textarea(props: TextareaHTMLAttributes<HTMLTextAreaElement>) {\n  return <textarea {...props} className={cn(inputBase, 'min-h-[96px] resize-y leading-relaxed', props.className)} />;\n}\n\nexport function Select(props: SelectHTMLAttributes<HTMLSelectElement>) {\n  return (\n    <select\n      {...props}\n      className={cn(\n        inputBase,\n        // seta customizada via bg, sem depender de estilo nativo do browser\n        \"appearance-none bg-[length:5px_5px] bg-no-repeat pr-8 bg-[position:calc(100%-16px)_50%,calc(100%-11px)_50%]\",\n        props.className,\n      )}\n    />\n  );\n}\n\nexport interface FieldProps {\n  label: string;\n  hint?: string;\n  children: ReactNode;\n  htmlFor?: string;\n}\n\n/** Envelope label + input + hint, usado em todos os formulários (Agentes, Config, Agenda). */\nexport function Field({ label, hint, children, htmlFor }: FieldProps) {\n  return (\n    <div className=\"flex flex-col gap-1.5\">\n      <label htmlFor={htmlFor} className=\"text-base font-medium text-tx\">\n        {label}\n      </label>\n      {children}\n      {hint && <span className=\"text-sm text-tx3\">{hint}</span>}\n    </div>\n  );\n}\n\nexport function Switch({\n  checked,\n  onChange,\n  children,\n}: {\n  checked: boolean;\n  onChange: (v: boolean) => void;\n  children: ReactNode;\n}) {\n  return (\n    <label className=\"inline-flex cursor-pointer items-center gap-2.5 text-base text-tx2\">\n      <input\n        type=\"checkbox\"\n        checked={checked}\n        onChange={(e) => onChange(e.target.checked)}\n        className=\"peer hidden\"\n      />\n      <span className=\"relative h-[18px] w-[30px] flex-none rounded-ds-full bg-line2 transition-colors peer-checked:bg-tx after:absolute after:left-[3px] after:top-[3px] after:h-3 after:w-3 after:rounded-full after:bg-surface after:transition-transform peer-checked:after:translate-x-3\" />\n      {children}\n    </label>\n  );\n}\n\n/** Grid 2 ou 3 colunas para pares de <Field> — usar em qualquer formulário. */\nexport function FieldRow({ cols = 2, children }: { cols?: 2 | 3; children: ReactNode }) {\n  return <div className={cn('grid gap-4', cols === 2 ? 'grid-cols-2' : 'grid-cols-3')}>{children}</div>;\n}\n"
+    }
+  ]
+}

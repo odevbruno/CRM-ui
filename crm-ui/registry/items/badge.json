@@ -1,0 +1,15 @@
+{
+  "name": "badge",
+  "type": "component",
+  "description": "Tag de status e Chip de contagem (exporta Tag, Chip, LiveDot).",
+  "registryDependencies": [
+    "cn"
+  ],
+  "files": [
+    {
+      "path": "Badge.tsx",
+      "target": "components",
+      "content": "import { HTMLAttributes } from 'react';\nimport { cn } from './cn';\n\ntype Tone = 'neutral' | 'ia' | 'ok' | 'warn';\n\nexport interface TagProps extends HTMLAttributes<HTMLSpanElement> {\n  tone?: Tone;\n}\n\n/**\n * Tag — rótulo de status curto dentro de listas/cards (ex.: \"IA\", \"Reunião\",\n * \"Escalado\", \"Encerrado\"). Tons semânticos fixos:\n *   ia    → accent  (ação feita pela IA sozinha)\n *   ok    → ok      (resultado positivo: reunião marcada, pronto)\n *   warn  → warn    (precisa de humano: escalado, pausado)\n *   neutral → cinza (estado final neutro: encerrado, arquivado)\n * Não crie tons novos — mapeie o status para um destes quatro.\n */\nexport function Tag({ tone = 'neutral', className, ...props }: TagProps) {\n  return (\n    <span\n      className={cn(\n        'inline-block rounded-ds border px-1.5 py-0.5 text-xs font-medium',\n        tone === 'neutral' && 'border-line bg-surface2 text-tx2',\n        tone === 'ia' && 'border-transparent bg-accent-soft text-accent',\n        tone === 'ok' && 'border-transparent bg-ok-soft text-ok',\n        tone === 'warn' && 'border-transparent bg-warn-soft text-warn',\n        className,\n      )}\n      {...props}\n    />\n  );\n}\n\n/** Chip — pill maior usada em cabeçalhos de página (ex.: \"17 ativas · 11 só IA\"). */\nexport function Chip({ className, ...props }: HTMLAttributes<HTMLSpanElement>) {\n  return (\n    <span\n      className={cn(\n        'inline-flex items-center gap-2 rounded-ds-full border border-line2 bg-surface px-2.5 py-1 text-sm text-tx2',\n        className,\n      )}\n      {...props}\n    />\n  );\n}\n\n/** Ponto de status \"ao vivo\" — usar sempre junto de um texto, nunca sozinho. */\nexport function LiveDot({ className }: { className?: string }) {\n  return <span className={cn('inline-block h-1.5 w-1.5 rounded-full bg-ok', className)} />;\n}\n"
+    }
+  ]
+}

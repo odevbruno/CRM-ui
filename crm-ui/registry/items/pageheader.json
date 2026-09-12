@@ -1,0 +1,13 @@
+{
+  "name": "pageheader",
+  "type": "component",
+  "description": "Cabeçalho padrão de tela: título + descrição + ações.",
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "PageHeader.tsx",
+      "target": "components",
+      "content": "import { ReactNode } from 'react';\n\nexport interface PageHeaderProps {\n  title: string;\n  /** linha descritiva abaixo do título (opcional em telas de listagem simples) */\n  description?: ReactNode;\n  /** botões/filtros à direita, alinhados à base do título */\n  actions?: ReactNode;\n}\n\n/**\n * Cabeçalho padrão de toda tela: título (28px, tracking apertado) + descrição\n * curta + ações à direita. Use em TODAS as telas — é o que dá consistência\n * entre Visão geral, CRM, Agentes etc.\n */\nexport function PageHeader({ title, description, actions }: PageHeaderProps) {\n  return (\n    <div className=\"mb-7 flex items-end justify-between gap-4\">\n      <div>\n        <h1 className=\"text-2xl font-semibold tracking-tight text-tx\">{title}</h1>\n        {description && <div className=\"mt-2 max-w-[640px] text-base text-tx3\">{description}</div>}\n      </div>\n      {actions && <div className=\"flex flex-wrap items-center justify-end gap-2\">{actions}</div>}\n    </div>\n  );\n}\n"
+    }
+  ]
+}

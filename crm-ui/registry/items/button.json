@@ -1,0 +1,15 @@
+{
+  "name": "button",
+  "type": "component",
+  "description": "Botão com variantes default/primary/ghost/icon.",
+  "registryDependencies": [
+    "cn"
+  ],
+  "files": [
+    {
+      "path": "Button.tsx",
+      "target": "components",
+      "content": "import { ButtonHTMLAttributes, forwardRef } from 'react';\nimport { cn } from './cn';\n\ntype Variant = 'default' | 'primary' | 'ghost' | 'icon';\n\nexport interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {\n  variant?: Variant;\n}\n\n/**\n * Botão padrão do sistema.\n * - default: borda hairline, fundo surface — ação secundária.\n * - primary: fundo tx (preto/branco conforme tema) — a ÚNICA ação de destaque\n *   em qualquer tela. Nunca use duas primary lado a lado.\n * - ghost: sem borda, texto tx3 — ações de baixo compromisso (Recusar, Descartar).\n * - icon: quadrado, só ícone (tema, menu mobile).\n */\nexport const Button = forwardRef<HTMLButtonElement, ButtonProps>(\n  ({ className, variant = 'default', ...props }, ref) => (\n    <button\n      ref={ref}\n      className={cn(\n        'inline-flex items-center gap-1.5 rounded-ds border text-base font-medium shadow-ds transition-colors',\n        variant === 'icon' ? 'p-1.5' : 'px-3 py-1.5',\n        variant === 'default' && 'border-line2 bg-surface text-tx hover:bg-surface2',\n        variant === 'primary' && 'border-tx bg-tx text-bg hover:opacity-90',\n        variant === 'ghost' && 'border-transparent bg-transparent text-tx3 shadow-none hover:text-tx2',\n        variant === 'icon' && 'border-line2 bg-surface text-tx hover:bg-surface2',\n        className,\n      )}\n      {...props}\n    />\n  ),\n);\nButton.displayName = 'Button';\n"
+    }
+  ]
+}

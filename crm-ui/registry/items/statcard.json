@@ -1,0 +1,15 @@
+{
+  "name": "statcard",
+  "type": "component",
+  "description": "Card de KPI grande com sparkline opcional.",
+  "registryDependencies": [
+    "card"
+  ],
+  "files": [
+    {
+      "path": "StatCard.tsx",
+      "target": "components",
+      "content": "import { ReactNode } from 'react';\nimport { Card } from './Card';\nimport { cn } from './cn';\n\nexport interface StatCardProps {\n  label: string;\n  /** Valor grande, tipicamente um número. Renderizado em font-mono. */\n  value: ReactNode;\n  /** Delta curto ao lado do label, ex.: \"+18%\" ou \"11 só IA\". */\n  delta?: string;\n  /** 'up' colore o delta em --ok; 'neutral' em --tx3. */\n  deltaTone?: 'up' | 'neutral';\n  /** Linha de contexto abaixo do valor. */\n  hint?: string;\n  /** Pontos de uma sparkline em SVG (0–100 em x e y), opcional. */\n  sparkline?: string; // path \"d\" já normalizado, ex. gerado por utils/sparkline.ts\n}\n\n/**\n * Card de KPI grande (4 por linha na Visão geral). Sempre:\n * label → valor (mono, 44px) → hint. Sparkline é decorativa e SEMPRE em --spark\n * (nunca na cor de acento) para não competir com o número.\n */\nexport function StatCard({ label, value, delta, deltaTone = 'neutral', hint, sparkline }: StatCardProps) {\n  return (\n    <Card className=\"flex min-h-[172px] flex-col p-6\">\n      <div className=\"flex items-center justify-between text-base font-medium text-tx2\">\n        <span>{label}</span>\n        {delta && (\n          <span className={cn('font-mono text-xs', deltaTone === 'up' ? 'text-ok' : 'text-tx3')}>\n            {delta}\n          </span>\n        )}\n      </div>\n      <div className=\"mt-auto font-mono text-3xl font-medium leading-none tracking-tighter text-tx\">\n        {value}\n      </div>\n      {hint && <div className=\"mt-2 text-sm text-tx3\">{hint}</div>}\n      {sparkline && (\n        <svg viewBox=\"0 0 200 28\" preserveAspectRatio=\"none\" className=\"mt-3.5 h-7 w-full\">\n          <path d={sparkline} stroke=\"var(--spark)\" strokeWidth={1.5} fill=\"none\" vectorEffect=\"non-scaling-stroke\" />\n        </svg>\n      )}\n    </Card>\n  );\n}\n"
+    }
+  ]
+}

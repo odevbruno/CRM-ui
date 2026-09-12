@@ -1,0 +1,13 @@
+{
+  "name": "cn",
+  "type": "component",
+  "description": "Utilitário de concatenação de classes.",
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "cn.ts",
+      "target": "components",
+      "content": "export function cn(...parts: Array<string | false | null | undefined>) {\n  return parts.filter(Boolean).join(' ');\n}\n"
+    }
+  ]
+}

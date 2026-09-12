@@ -1,0 +1,62 @@
+{
+  "components": [
+    {
+      "name": "cn",
+      "description": "Utilitário de concatenação de classes."
+    },
+    {
+      "name": "button",
+      "description": "Botão com variantes default/primary/ghost/icon."
+    },
+    {
+      "name": "badge",
+      "description": "Tag de status e Chip de contagem (exporta Tag, Chip, LiveDot)."
+    },
+    {
+      "name": "card",
+      "description": "Card + CardHeader + CardBody + CardFooter."
+    },
+    {
+      "name": "statcard",
+      "description": "Card de KPI grande com sparkline opcional."
+    },
+    {
+      "name": "segmented",
+      "description": "Grupo de opções exclusivas (ex.: Hoje/7 dias/30 dias)."
+    },
+    {
+      "name": "field",
+      "description": "Input, Select, Textarea, Switch, Field, FieldRow."
+    },
+    {
+      "name": "sidebar",
+      "description": "Navegação lateral fixa com status e conta."
+    },
+    {
+      "name": "pageheader",
+      "description": "Cabeçalho padrão de tela: título + descrição + ações."
+    },
+    {
+      "name": "table",
+      "description": "Table/Th/Td/Tr com hairlines."
+    },
+    {
+      "name": "themetoggle",
+      "description": "Hook useTheme + botão de alternância light/dark."
+    }
+  ],
+  "screens": [
+    {
+      "name": "visao-geral",
+      "description": "Tela Visão geral (dashboard) completa e pronta."
+    },
+    {
+      "name": "crm",
+      "description": "Tela Pipeline comercial (kanban) completa e pronta."
+    }
+  ],
+  "tokens": {
+    "name": "tokens",
+    "type": "tokens"
+  }
+}

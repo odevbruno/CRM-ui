@@ -1,0 +1,15 @@
+{
+  "name": "segmented",
+  "type": "component",
+  "description": "Grupo de opções exclusivas (ex.: Hoje/7 dias/30 dias).",
+  "registryDependencies": [
+    "cn"
+  ],
+  "files": [
+    {
+      "path": "Segmented.tsx",
+      "target": "components",
+      "content": "import { cn } from './cn';\n\nexport interface SegmentedProps<T extends string> {\n  options: readonly T[];\n  value: T;\n  onChange: (value: T) => void;\n  className?: string;\n}\n\n/** Grupo de opções exclusivas em um único controle (ex.: Hoje / 7 dias / 30 dias). */\nexport function Segmented<T extends string>({ options, value, onChange, className }: SegmentedProps<T>) {\n  return (\n    <div className={cn('flex rounded-ds border border-line2 bg-surface p-0.5', className)}>\n      {options.map((opt) => (\n        <button\n          key={opt}\n          type=\"button\"\n          onClick={() => onChange(opt)}\n          className={cn(\n            'rounded-[4px] px-2.5 py-1 text-base font-medium text-tx3 transition-colors',\n            opt === value && 'bg-bg text-tx',\n          )}\n        >\n          {opt}\n        </button>\n      ))}\n    </div>\n  );\n}\n"
+    }
+  ]
+}

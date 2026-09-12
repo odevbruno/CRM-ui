@@ -1,0 +1,15 @@
+{
+  "name": "card",
+  "type": "component",
+  "description": "Card + CardHeader + CardBody + CardFooter.",
+  "registryDependencies": [
+    "cn"
+  ],
+  "files": [
+    {
+      "path": "Card.tsx",
+      "target": "components",
+      "content": "import { HTMLAttributes, ReactNode } from 'react';\nimport { cn } from './cn';\n\nexport function Card({ className, ...props }: HTMLAttributes<HTMLDivElement>) {\n  return (\n    <div\n      className={cn('rounded-ds border border-line bg-surface shadow-ds', className)}\n      {...props}\n    />\n  );\n}\n\nexport interface CardHeaderProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {\n  title: ReactNode;\n  /** Texto secundário cinza ao lado do título, ex.: \"últimas 24 horas\". */\n  subtitle?: ReactNode;\n  /** Ação à direita — geralmente um <Button> ou <Segmented>. */\n  action?: ReactNode;\n}\n\n/** Cabeçalho padrão de card: título + subtítulo inline + ação à direita. */\nexport function CardHeader({ title, subtitle, action, className, ...props }: CardHeaderProps) {\n  return (\n    <div\n      className={cn('flex items-center justify-between border-b border-line px-6 py-4', className)}\n      {...props}\n    >\n      <h2 className=\"text-md font-semibold tracking-tight text-tx\">\n        {title}\n        {subtitle && <span className=\"ml-2 font-normal text-tx3\">{subtitle}</span>}\n      </h2>\n      {action}\n    </div>\n  );\n}\n\nexport function CardBody({ className, ...props }: HTMLAttributes<HTMLDivElement>) {\n  return <div className={cn('px-6 py-6', className)} {...props} />;\n}\n\n/** Rodapé de card com ações — usado em formulários (steps) e listas de exceção. */\nexport function CardFooter({ className, ...props }: HTMLAttributes<HTMLDivElement>) {\n  return (\n    <div\n      className={cn('flex justify-end gap-2 border-t border-line px-6 py-4', className)}\n      {...props}\n    />\n  );\n}\n"
+    }
+  ]
+}

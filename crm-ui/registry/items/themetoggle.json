@@ -1,0 +1,15 @@
+{
+  "name": "themetoggle",
+  "type": "component",
+  "description": "Hook useTheme + botão de alternância light/dark.",
+  "registryDependencies": [
+    "button"
+  ],
+  "files": [
+    {
+      "path": "ThemeToggle.tsx",
+      "target": "components",
+      "content": "'use client';\nimport { useEffect, useState } from 'react';\nimport { Button } from './Button';\n\nconst STORAGE_KEY = 'cotaflow-theme';\n\n/**\n * Hook de tema. Lê preferência salva → prefers-color-scheme → 'light'.\n * Aplica via `data-theme` no <html>, que é o seletor que tokens.css espera.\n */\nexport function useTheme() {\n  const [theme, setTheme] = useState<'light' | 'dark'>('light');\n\n  useEffect(() => {\n    const saved = localStorage.getItem(STORAGE_KEY) as 'light' | 'dark' | null;\n    const preferred = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';\n    const initial = saved ?? preferred;\n    setTheme(initial);\n    document.documentElement.setAttribute('data-theme', initial);\n  }, []);\n\n  function toggle() {\n    const next = theme === 'dark' ? 'light' : 'dark';\n    setTheme(next);\n    document.documentElement.setAttribute('data-theme', next);\n    localStorage.setItem(STORAGE_KEY, next);\n  }\n\n  return { theme, toggle };\n}\n\nexport function ThemeToggle() {\n  const { toggle } = useTheme();\n  return (\n    <Button variant=\"icon\" aria-label=\"Alternar tema\" onClick={toggle}>\n      <svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" strokeWidth={1.5} strokeLinecap=\"round\" strokeLinejoin=\"round\">\n        <path d=\"M12 3a9 9 0 1 0 9 9c0-.5 0-1-.1-1.4A5.5 5.5 0 0 1 12.4 3.1 9 9 0 0 0 12 3z\" />\n      </svg>\n    </Button>\n  );\n}\n"
+    }
+  ]
+}

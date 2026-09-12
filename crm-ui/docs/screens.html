@@ -1,0 +1,989 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CotaFlow — AI Sales OS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F5F5F3; --surface:#FFFFFF; --surface2:#FAFAF8; --side:#F5F5F3;
+  --line:#E6E6E2; --line2:#D9D9D4;
+  --tx:#171716; --tx2:#5C5C57; --tx3:#8F8F89; --tx4:#B5B5AF;
+  --accent:#2F55D4; --accent-soft:#E9EEFB; --accent-line:#2F55D4;
+  --ok:#1F7A4C; --ok-soft:#E6F3EB; --warn:#A6660A; --warn-soft:#FAF1DF;
+  --grid:#EFEFEC; --spark:#CFCFCA; --ghost:#C3C3BE;
+  --shadow:0 1px 2px rgba(0,0,0,.03);
+  --r:6px;
+  --font:"Geist","Inter",system-ui,-apple-system,sans-serif; --mono:"Geist Mono","SF Mono","JetBrains Mono",Menlo,Consolas,monospace;
+}
+[data-theme="dark"]{
+  --bg:#0E0E0D; --surface:#151514; --surface2:#1A1A19; --side:#0E0E0D;
+  --line:#242423; --line2:#2E2E2C;
+  --tx:#EDEDEA; --tx2:#A5A5A0; --tx3:#75756F; --tx4:#4E4E4A;
+  --accent:#8FA5F5; --accent-soft:#1B2340; --accent-line:#7B93F0;
+  --ok:#5FC48E; --ok-soft:#14261C; --warn:#E0A84A; --warn-soft:#2B2213;
+  --grid:#1F1F1E; --spark:#3A3A38; --ghost:#3A3A38;
+  --shadow:none;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:14px}
+body{font-family:var(--font);background:var(--bg);color:var(--tx);line-height:1.5;-webkit-font-smoothing:antialiased;
+  display:grid;grid-template-columns:236px 1fr;min-height:100vh;transition:background .2s,color .2s}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums}
+.mono{font-family:var(--mono);font-size:12px;letter-spacing:0}
+svg.i{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* Sidebar */
+.side{background:var(--side);border-right:1px solid var(--line);padding:22px 14px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+.brand{display:flex;align-items:center;gap:10px;padding:4px 10px;margin-bottom:26px}
+.brand-mark{width:24px;height:24px;background:var(--tx);display:grid;place-items:center;border-radius:4px}
+.brand-mark svg{width:13px;height:13px;stroke:var(--bg);fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.brand b{font-weight:600;font-size:14px;letter-spacing:-.01em}
+.brand span{font-size:12px;color:var(--tx3);margin-left:6px;white-space:nowrap}
+.nav{display:flex;flex-direction:column;gap:1px}
+.nav a{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:var(--r);color:var(--tx2);font-weight:500;font-size:13.5px}
+.nav a:hover{background:var(--surface)}
+.nav a.on{background:var(--surface);color:var(--tx);box-shadow:inset 0 0 0 1px var(--line)}
+.nav a .c{margin-left:auto;font-family:var(--mono);font-size:11.5px;color:var(--tx3)}
+.nav a .c.w{color:var(--warn)}
+.nav .sep{height:1px;background:var(--line);margin:12px 10px}
+.side .foot{margin-top:auto;padding:14px 10px 0;border-top:1px solid var(--line)}
+.side .status{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;margin-bottom:4px}
+.side .status+p{font-size:12.5px;color:var(--tx3);line-height:1.5}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--ok);flex:none}
+.acct{display:flex;align-items:center;gap:9px;margin-top:16px}
+.av{width:26px;height:26px;border-radius:50%;background:var(--line);color:var(--tx2);display:grid;place-items:center;font-size:11px;font-weight:600;flex:none}
+.acct b{display:block;font-size:12.5px;font-weight:500}.acct span{font-size:11.5px;color:var(--tx3)}
+
+/* Main */
+main{padding:32px 44px 64px;max-width:1440px;width:100%}
+.top{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:28px}
+.top h1{font-size:28px;font-weight:600;letter-spacing:-.03em;line-height:1.1}
+.top .meta{color:var(--tx3);font-size:13px;margin-top:8px;display:flex;align-items:center;gap:8px}
+.top .right{display:flex;gap:8px;align-items:center}
+.seg{display:flex;background:var(--surface);border:1px solid var(--line2);border-radius:var(--r);padding:2px}
+.seg button{padding:5px 11px;border-radius:4px;font-size:13px;color:var(--tx3);font-weight:500}
+.seg button.on{background:var(--bg);color:var(--tx)}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:6px 12px;border-radius:var(--r);font-size:13px;font-weight:500;border:1px solid var(--line2);background:var(--surface);box-shadow:var(--shadow)}
+.btn.pri{background:var(--tx);color:var(--bg);border-color:var(--tx)}
+.btn.icon{padding:6px 8px}
+.btn svg.i{width:14px;height:14px}
+
+/* Stats: quatro cards grandes, quadrados */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:16px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:24px 26px 22px;min-height:172px;display:flex;flex-direction:column;box-shadow:var(--shadow)}
+.stat .l{font-size:13px;color:var(--tx2);font-weight:500;display:flex;justify-content:space-between;align-items:center}
+.stat .l .d{font-family:var(--mono);font-size:12px}
+.d.up{color:var(--ok)} .d.nt{color:var(--tx3)}
+.stat .v{font-size:44px;font-weight:500;letter-spacing:-.045em;line-height:1;margin:auto 0 0}
+.stat .h{font-size:12.5px;color:var(--tx3);margin-top:8px}
+.stat svg.sp{width:100%;height:28px;margin-top:14px}
+
+/* Grid */
+.grid{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+.card .hd{display:flex;align-items:center;justify-content:space-between;padding:18px 26px;border-bottom:1px solid var(--line)}
+.card h2{font-size:14.5px;font-weight:600;letter-spacing:-.015em}
+.card h2 span{font-weight:400;color:var(--tx3);margin-left:8px}
+.card .bd{padding:24px 26px}
+.legend{display:flex;gap:16px;font-size:12.5px;color:var(--tx2)}
+.legend i{display:inline-block;width:10px;height:2px;margin-right:6px;vertical-align:3px}
+
+/* Chart */
+.chart{position:relative;padding-left:28px}
+.chart svg{width:100%;height:240px;display:block;overflow:visible}
+.chart .y{position:absolute;left:0;top:-7px;bottom:24px;display:flex;flex-direction:column;justify-content:space-between;color:var(--tx3);font-family:var(--mono);font-size:11px}
+.chart .x{display:flex;justify-content:space-between;color:var(--tx3);font-family:var(--mono);font-size:11px;margin-top:10px}
+.tip{position:absolute;left:71%;top:0;transform:translate(-50%,-6px);background:var(--tx);color:var(--bg);border-radius:var(--r);padding:8px 11px;font-size:12px;white-space:nowrap;line-height:1.55}
+.tip b{display:block;font-weight:500;opacity:.6;font-size:11px;font-family:var(--mono)}
+.tip span{display:flex;gap:7px;align-items:center}.tip i{width:6px;height:6px;border-radius:50%}
+
+/* Autonomia */
+.auto .big{font-size:44px;font-weight:500;letter-spacing:-.045em;line-height:1}
+.auto .big+p{font-size:13px;color:var(--tx2);margin:6px 0 18px}
+.track{height:8px;background:var(--grid);overflow:hidden;display:flex;gap:2px}
+.track i{display:block;height:100%}
+.auto .lg{display:flex;gap:16px;font-size:12.5px;color:var(--tx2);margin:10px 0 18px}
+.auto .lg i{display:inline-block;width:8px;height:8px;margin-right:6px}
+.kv{display:flex;justify-content:space-between;padding:11px 0;border-top:1px solid var(--line);font-size:13px;color:var(--tx2)}
+.kv b{color:var(--tx);font-weight:500;font-family:var(--mono);font-size:12.5px}
+.kv:last-child{padding-bottom:0}
+
+/* Feed */
+.row{display:grid;grid-template-columns:32px 1fr auto;gap:16px;align-items:center;padding:14px 26px;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:0}
+.row .ic{width:32px;height:32px;border-radius:var(--r);background:var(--surface2);border:1px solid var(--line);display:grid;place-items:center;color:var(--tx2)}
+.row .ic.ia{background:var(--accent-soft);border-color:transparent;color:var(--accent)}
+.row .ic.ok{background:var(--ok-soft);border-color:transparent;color:var(--ok)}
+.row .ic.w{background:var(--warn-soft);border-color:transparent;color:var(--warn)}
+.row b{font-weight:500;font-size:13.5px}
+.row p{font-size:13px;color:var(--tx2)}
+.row .r{text-align:right;font-size:12px;color:var(--tx3);font-family:var(--mono)}
+.tag{display:inline-block;font-family:var(--font);font-size:11.5px;font-weight:500;padding:2px 7px;border-radius:4px;margin-bottom:3px;background:var(--surface2);border:1px solid var(--line);color:var(--tx2)}
+.tag.ia{background:var(--accent-soft);border-color:transparent;color:var(--accent)} .tag.ok{background:var(--ok-soft);border-color:transparent;color:var(--ok)} .tag.w{background:var(--warn-soft);border-color:transparent;color:var(--warn)}
+
+/* Exceção */
+.exc{padding:22px 26px;border-bottom:1px solid var(--line)}
+.exc .who{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.exc .who b{display:block;font-size:13.5px;font-weight:500}.exc .who span{font-size:12px;color:var(--tx3)}
+.exc .who .t{margin-left:auto;font-size:12px;color:var(--tx3);font-family:var(--mono)}
+.exc q{display:block;font-size:17px;font-weight:500;letter-spacing:-.02em;line-height:1.4;margin-bottom:16px;quotes:"“" "”"}
+.exc dl{display:grid;grid-template-columns:1fr 1fr 1fr;border:1px solid var(--line);margin-bottom:16px}
+.exc dl div{padding:10px 12px;border-right:1px solid var(--line)}.exc dl div:last-child{border:0}
+.exc dt{font-size:11.5px;color:var(--tx3)}.exc dd{font-size:14px;font-weight:500;font-family:var(--mono);margin-top:2px}
+.exc .acts{display:flex;gap:6px}
+.exc .acts .btn.ghost{border-color:transparent;background:none;box-shadow:none;color:var(--tx3)}
+.quiet{padding:16px 26px;font-size:13px;color:var(--tx2);display:flex;gap:10px;align-items:center}
+.quiet svg.i{color:var(--ok)}
+.quiet b{font-weight:500;color:var(--tx)}
+
+/* Agenda */
+.slot{display:grid;grid-template-columns:52px 1fr auto;gap:12px;align-items:center;padding:13px 26px;border-bottom:1px solid var(--line);font-size:13px}
+.slot:last-child{border:0}
+.slot time{font-family:var(--mono);font-size:12.5px;color:var(--tx)}
+.slot b{font-weight:500;display:block}.slot span{color:var(--tx3);font-size:12.5px}
+.slot .tag{margin:0}
+
+
+.mbar{display:none}
+.scrim{display:none}
+
+/* ≤1180: KPIs em 2 colunas, painéis empilham */
+@media (max-width:1180px){
+  main{padding:28px 28px 56px}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .grid{grid-template-columns:1fr}
+  .top{flex-wrap:wrap;gap:14px}
+}
+
+/* ≤900: sidebar vira drawer, topbar mobile */
+@media (max-width:900px){
+  body{grid-template-columns:1fr}
+  .mbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--bg);position:sticky;top:0;z-index:30}
+  .side{position:fixed;top:0;left:0;bottom:0;width:272px;height:100vh;z-index:40;transform:translateX(-100%);transition:transform .22s ease;box-shadow:none}
+  .side.open{transform:none;box-shadow:12px 0 40px -20px rgba(0,0,0,.35)}
+  .scrim.show{display:block;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:35}
+  main{padding:20px 16px 48px}
+  .top{align-items:flex-start;flex-direction:column;margin-bottom:20px}
+  .top h1{font-size:24px}
+  .top .right{width:100%;flex-wrap:wrap}
+  .seg{flex:1 0 100%}.seg button{flex:1;text-align:center;padding:6px 8px}
+  .top .right>.btn{flex:1;justify-content:center}
+  #theme{display:none}
+  .stat{min-height:auto;padding:18px 18px 16px}
+  .stat .v{font-size:36px;margin-top:14px}
+  .stat .l .d{display:none}
+  .card .hd{padding:14px 18px;flex-wrap:wrap;gap:8px}
+  .card .bd{padding:18px}
+  .chart svg{height:180px}
+  .chart .x span:nth-child(even){display:none}
+  .tip{display:none}
+  .row{padding:12px 18px;gap:12px}
+  .row .r br{display:none}
+  .row .r{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+  .exc,.quiet{padding:18px}
+  .exc q{font-size:15.5px}
+  .exc .acts{flex-wrap:wrap}
+  .exc .acts .btn{flex:1;justify-content:center}
+  .exc .acts .btn.ghost{flex:0 0 100%;justify-content:flex-start;padding-left:0}
+  .slot{padding:12px 18px}
+}
+
+/* ≤560: KPIs em 1 coluna, sem legenda do gráfico ao lado */
+@media (max-width:560px){
+  .stats{grid-template-columns:1fr;gap:12px}
+  .grid{gap:12px}
+  .stat .l .d{display:inline}
+  .legend{width:100%}
+  .exc dl{grid-template-columns:1fr 1fr}
+  .exc dl div:nth-child(2){border-right:0}
+  .exc dl div:nth-child(3){grid-column:1/-1;border-top:1px solid var(--line)}
+  .row .r .tag{display:none}
+}
+@media (prefers-reduced-motion:reduce){.side{transition:none}}
+
+/* ===== app shell / views ===== */
+.view{display:none}.view.on{display:block}
+.pg{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:24px;gap:16px}
+.pg h1{font-size:28px;font-weight:600;letter-spacing:-.03em;line-height:1.1}
+.pg .meta{color:var(--tx3);font-size:13px;margin-top:8px;max-width:640px}
+.pg .right{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin-bottom:20px}
+.tabs button{padding:9px 12px;font-size:13px;color:var(--tx3);font-weight:500;border-bottom:1px solid transparent;margin-bottom:-1px}
+.tabs button.on{color:var(--tx);border-bottom-color:var(--tx)}
+.tabs button .c{font-family:var(--mono);font-size:11px;color:var(--tx4);margin-left:6px}
+.tabs button.on .c{color:var(--tx3)}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:13px;font-weight:500;color:var(--tx)}
+.field .hint{font-size:12px;color:var(--tx3)}
+.in{width:100%;font:inherit;font-size:13.5px;color:var(--tx);background:var(--surface);border:1px solid var(--line2);border-radius:var(--r);padding:8px 11px;outline:0}
+.in:focus{border-color:var(--tx3)}
+.in::placeholder{color:var(--tx4)}
+textarea.in{min-height:96px;resize:vertical;line-height:1.5}
+select.in{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--tx3) 50%),linear-gradient(135deg,var(--tx3) 50%,transparent 50%);background-position:calc(100% - 16px) 50%,calc(100% - 11px) 50%;background-size:5px 5px;background-repeat:no-repeat;padding-right:32px}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.f3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.switch{display:inline-flex;align-items:center;gap:10px;font-size:13px;color:var(--tx2);cursor:pointer}
+.switch i{width:30px;height:18px;border-radius:99px;background:var(--line2);position:relative;transition:background .15s;flex:none}
+.switch i:after{content:"";position:absolute;top:3px;left:3px;width:12px;height:12px;border-radius:50%;background:#fff;transition:transform .15s}
+.switch input{display:none}.switch input:checked+i{background:var(--tx)}.switch input:checked+i:after{transform:translateX(12px)}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;font-weight:500;color:var(--tx3);font-size:12px;padding:10px 26px;border-bottom:1px solid var(--line)}
+.tbl td{padding:12px 26px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:0}
+.tbl .mono{color:var(--tx2)}
+.empty{padding:48px 26px;text-align:center;color:var(--tx3);font-size:13px}
+.empty b{display:block;color:var(--tx);font-weight:500;margin-bottom:4px;font-size:14px}
+.empty .ico{width:40px;height:40px;border:1px solid var(--line);border-radius:var(--r);display:grid;place-items:center;margin:0 auto 14px;color:var(--tx3)}
+.stack{display:flex;flex-direction:column;gap:16px}
+
+/* Conversas: 3 painéis */
+.inbox{display:grid;grid-template-columns:320px 1fr 300px;height:calc(100vh - 170px);min-height:560px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.inbox>*{min-width:0}
+.ib-list{border-right:1px solid var(--line);display:flex;flex-direction:column}
+.ib-list .srch{padding:12px 14px;border-bottom:1px solid var(--line)}
+.ib-list .filters{display:flex;gap:4px;padding:8px 10px;border-bottom:1px solid var(--line)}
+.ib-list .filters button{padding:4px 9px;border-radius:4px;font-size:12px;color:var(--tx3);font-weight:500}
+.ib-list .filters button.on{background:var(--bg);color:var(--tx)}
+.ib-list .items{overflow:auto;flex:1}
+.conv{display:grid;grid-template-columns:34px 1fr auto;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line);cursor:pointer;text-align:left;width:100%}
+.conv:hover{background:var(--surface2)}
+.conv>div{min-width:0}
+.conv .m{white-space:nowrap}
+.conv.on{background:var(--bg)}
+.conv .av{width:34px;height:34px;font-size:12px}
+.conv b{font-weight:500;font-size:13.5px;display:block}
+.conv p{font-size:12.5px;color:var(--tx3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.conv .m{font-family:var(--mono);font-size:11px;color:var(--tx3);text-align:right}
+.conv .m .n{display:inline-block;background:var(--tx);color:var(--bg);font-family:var(--font);border-radius:99px;padding:0 6px;font-size:11px;margin-top:4px}
+.conv .w{width:7px;height:7px;border-radius:50%;background:var(--warn);display:inline-block;margin-left:6px;vertical-align:1px}
+.ib-thread{display:flex;flex-direction:column}
+.ib-thread .hd{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--line)}
+.ib-thread .hd b{font-weight:500;display:block}
+.ib-thread .hd span{font-size:12px;color:var(--tx3)}
+.msgs{flex:1;overflow:auto;padding:22px 20px;display:flex;flex-direction:column;gap:10px;background:var(--surface2)}
+.msg{max-width:70%;padding:9px 12px;border-radius:var(--r);font-size:13.5px;line-height:1.5;position:relative}
+.msg.in{align-self:flex-start;background:var(--surface);border:1px solid var(--line)}
+.msg.out{align-self:flex-end;background:var(--tx);color:var(--bg)}
+.msg .t{display:block;font-family:var(--mono);font-size:10.5px;opacity:.55;margin-top:4px}
+.msg .who{display:block;font-size:11px;font-weight:500;color:var(--accent);margin-bottom:2px}
+.msg.out .who{color:var(--bg);opacity:.7}
+.sysline{align-self:center;font-size:11.5px;color:var(--tx3);font-family:var(--mono);padding:4px 10px;border:1px dashed var(--line2);border-radius:4px}
+.composer{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--line);align-items:center}
+.composer .in{flex:1}
+.ib-ctx{border-left:1px solid var(--line);overflow:auto;padding:18px 20px;display:flex;flex-direction:column;gap:18px}
+.ib-ctx h3{font-size:12px;font-weight:500;color:var(--tx3);margin-bottom:8px}
+.ib-ctx .lead b{font-size:15px;font-weight:600;letter-spacing:-.01em;display:block}
+.ib-ctx .lead span{font-size:12.5px;color:var(--tx3)}
+.kvs{display:flex;flex-direction:column}
+.kvs div{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-top:1px solid var(--line);font-size:12.5px}
+.kvs div:first-child{border-top:0;padding-top:0}
+.kvs span{color:var(--tx3)}.kvs b{font-weight:500;text-align:right}
+.stage{display:flex;gap:3px}
+.stage i{flex:1;height:4px;background:var(--line)}
+.stage i.on{background:var(--accent)}
+.ib-ctx .acts{display:flex;flex-direction:column;gap:6px}
+.ib-ctx .acts .btn{justify-content:center}
+
+/* CRM kanban */
+.kanban{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(272px,1fr);gap:12px;overflow-x:auto;padding-bottom:8px}
+.col{background:var(--bg);border:1px solid var(--line);border-radius:var(--r);display:flex;flex-direction:column;min-height:520px}
+.col .ch{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--line)}
+.col .ch b{font-weight:500;font-size:13.5px}
+.col .ch .c{font-family:var(--mono);font-size:11.5px;color:var(--tx3)}
+.col .ch .sum{font-family:var(--mono);font-size:11px;color:var(--tx3);display:block;margin-top:1px}
+.col .body{padding:10px;display:flex;flex-direction:column;gap:8px}
+.lead{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 12px 10px;box-shadow:var(--shadow)}
+.lead .n{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.lead .n b{font-weight:500;font-size:13.5px}
+.lead p{font-size:12.5px;color:var(--tx2);line-height:1.45}
+.lead .f{display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:11.5px;color:var(--tx3);font-family:var(--mono)}
+.lead .f .tag{margin:0}
+.lead .val{font-family:var(--mono);font-size:12px;color:var(--tx)}
+.col .empty{padding:36px 10px}
+
+/* Agentes */
+.agents{display:grid;grid-template-columns:280px 1fr;gap:16px}
+.agent-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--line);cursor:pointer;text-align:left;width:100%}
+.agent-item:last-child{border:0}
+.agent-item.on{background:var(--bg)}
+.agent-item .ic{width:34px;height:34px;border-radius:var(--r);background:var(--surface2);border:1px solid var(--line);display:grid;place-items:center;color:var(--tx2)}
+.agent-item b{font-weight:500;font-size:13.5px;display:block}.agent-item span{font-size:12px;color:var(--tx3)}
+.agent-item .tag{margin:0 0 0 auto}
+.steps{display:flex;gap:0;border-bottom:1px solid var(--line);overflow:auto}
+.steps button{padding:12px 16px;font-size:13px;color:var(--tx3);font-weight:500;white-space:nowrap;border-bottom:1px solid transparent;margin-bottom:-1px;display:flex;align-items:center;gap:8px}
+.steps button .n{font-family:var(--mono);font-size:11px;width:18px;height:18px;border:1px solid var(--line2);display:grid;place-items:center;border-radius:4px}
+.steps button.done .n{background:var(--tx);color:var(--bg);border-color:var(--tx)}
+.steps button.on{color:var(--tx);border-bottom-color:var(--tx)}
+.steps button.on .n{border-color:var(--tx)}
+.form{padding:24px 26px;display:flex;flex-direction:column;gap:20px}
+.card .ft{display:flex;justify-content:flex-end;gap:8px;padding:16px 26px;border-top:1px solid var(--line)}
+
+/* Playground */
+.play{display:grid;grid-template-columns:1fr 300px;gap:16px}
+.play .chat{display:flex;flex-direction:column;height:calc(100vh - 210px);min-height:520px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:14px}
+.chips button{padding:6px 11px;border:1px solid var(--line2);border-radius:99px;font-size:12.5px;color:var(--tx2);background:var(--surface)}
+.sess{padding:12px 20px;border-bottom:1px solid var(--line);cursor:pointer}
+.sess:last-child{border:0}
+.sess b{font-weight:500;font-size:13px;display:flex;justify-content:space-between}.sess b span{font-family:var(--mono);font-size:11px;color:var(--tx3);font-weight:400}
+.sess p{font-size:12.5px;color:var(--tx3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.dbg{font-family:var(--mono);font-size:11.5px;line-height:1.7;color:var(--tx2);padding:14px 20px}
+.dbg div{display:flex;gap:10px}.dbg .k{color:var(--tx3);width:64px;flex:none}.dbg .v{color:var(--tx)}
+.dbg .ok{color:var(--ok)}
+
+/* Agenda */
+.agenda-wrap{display:grid;grid-template-columns:300px 1fr;gap:16px}
+.week{display:grid;grid-template-columns:52px repeat(5,1fr);border-top:1px solid var(--line)}
+.week .h{padding:10px 8px;font-size:12px;color:var(--tx3);border-bottom:1px solid var(--line);border-left:1px solid var(--line);text-align:center}
+.week .h b{display:block;font-family:var(--mono);font-size:14px;color:var(--tx);font-weight:500}
+.week .h.today b{color:var(--accent)}
+.week .t{font-family:var(--mono);font-size:10.5px;color:var(--tx3);padding:6px 8px 0;border-bottom:1px solid var(--line);height:56px;text-align:right}
+.week .c{border-left:1px solid var(--line);border-bottom:1px solid var(--line);height:56px;position:relative}
+.week .c.off{background:repeating-linear-gradient(-45deg,transparent 0 6px,var(--grid) 6px 7px)}
+.ev{position:absolute;left:4px;right:4px;border-radius:4px;padding:5px 7px;font-size:11.5px;line-height:1.3;overflow:hidden;background:var(--accent-soft);color:var(--accent);border-left:2px solid var(--accent)}
+.ev b{display:block;font-weight:500;font-size:11.5px}
+.ev.hm{background:var(--surface2);color:var(--tx2);border-left-color:var(--tx3);text-align:left;padding:5px 7px;height:auto}
+.ev.w{background:var(--warn-soft);color:var(--warn);border-left-color:var(--warn)}
+.cap{display:flex;gap:12px;align-items:center;padding:14px 0 0}
+.cap .track{flex:1}
+
+/* Integrações */
+.integ{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.ch-card{display:flex;gap:14px;padding:22px 26px;align-items:flex-start}
+.ch-card .lg{width:40px;height:40px;border:1px solid var(--line);border-radius:var(--r);display:grid;place-items:center;flex:none;color:var(--tx2)}
+.ch-card .lg.wa{color:var(--ok)}
+.ch-card b{font-weight:600;font-size:14.5px;letter-spacing:-.01em;display:block}
+.ch-card p{font-size:13px;color:var(--tx2);margin-top:3px}
+.ch-card .tag{margin:0 0 0 auto;flex:none}
+.pulse{display:inline-flex;align-items:center;gap:6px}
+.pulse:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--ok)}
+
+/* Conhecimento */
+.kb{display:grid;grid-template-columns:280px 1fr;gap:16px}
+.kb-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--line);cursor:pointer;width:100%;text-align:left}
+.kb-item.on{background:var(--bg)}
+.kb-item b{font-weight:500;font-size:13.5px;display:block}.kb-item span{font-size:12px;color:var(--tx3)}
+.kb-item .c{margin-left:auto;font-family:var(--mono);font-size:11.5px;color:var(--tx3)}
+.drop{margin:20px 26px 0;border:1px dashed var(--line2);border-radius:var(--r);padding:26px;text-align:center;color:var(--tx3);font-size:13px}
+.drop b{display:block;color:var(--tx);font-weight:500;margin-bottom:2px}
+.src{display:grid;grid-template-columns:32px 1fr auto auto;gap:14px;align-items:center;padding:12px 26px;border-bottom:1px solid var(--line)}
+.src:last-child{border:0}
+.src .ic{width:32px;height:32px;border:1px solid var(--line);border-radius:var(--r);display:grid;place-items:center;color:var(--tx3)}
+.src b{font-weight:500;font-size:13.5px;display:block}.src span{font-size:12px;color:var(--tx3);font-family:var(--mono)}
+.src .sz{font-family:var(--mono);font-size:11.5px;color:var(--tx3)}
+
+/* Alertas */
+.alert{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:start;padding:20px 26px;border-bottom:1px solid var(--line)}
+.alert:last-child{border:0}
+.alert .ic{width:32px;height:32px;border-radius:var(--r);display:grid;place-items:center;background:var(--warn-soft);color:var(--warn)}
+.alert .ic.i{background:var(--accent-soft);color:var(--accent)}
+.alert b{font-weight:500;font-size:14px;display:block}
+.alert p{font-size:13px;color:var(--tx2);margin-top:3px;max-width:640px}
+.alert q{display:block;margin-top:10px;font-size:13.5px;padding-left:10px;border-left:2px solid var(--line2);color:var(--tx);quotes:"“" "”"}
+.alert .meta{display:flex;gap:14px;margin-top:10px;font-family:var(--mono);font-size:11.5px;color:var(--tx3)}
+.alert .acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+
+/* Configurações */
+.settings{display:grid;grid-template-columns:240px 1fr;gap:16px;align-items:start}
+.subnav{display:flex;flex-direction:column;gap:1px}
+.subnav button{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--r);font-size:13.5px;color:var(--tx2);text-align:left;font-weight:500}
+.subnav button.on{background:var(--surface);color:var(--tx);box-shadow:inset 0 0 0 1px var(--line)}
+.subnav button span{display:block;font-size:12px;color:var(--tx3);font-weight:400}
+.member{display:grid;grid-template-columns:32px 1fr auto auto;gap:14px;align-items:center;padding:12px 26px;border-bottom:1px solid var(--line)}
+.member:last-child{border:0}
+.member b{font-weight:500;font-size:13.5px;display:block}.member span{font-size:12px;color:var(--tx3)}
+.member .role{font-size:12.5px;color:var(--tx2)}
+.perm{display:grid;grid-template-columns:1fr repeat(3,90px);align-items:center;padding:10px 26px;border-bottom:1px solid var(--line);font-size:13px}
+.perm:last-child{border:0}
+.perm.h{color:var(--tx3);font-size:12px;font-weight:500}
+.perm .chk{text-align:center;font-family:var(--mono);color:var(--tx)}
+.perm .chk.no{color:var(--tx4)}
+
+@media (max-width:1180px){
+  .inbox{grid-template-columns:280px 1fr}.ib-ctx{display:none}
+  .agents,.kb,.settings,.agenda-wrap,.play{grid-template-columns:1fr}
+  .integ{grid-template-columns:1fr}
+}
+@media (max-width:900px){
+  .pg{flex-direction:column;align-items:flex-start}
+  .inbox{grid-template-columns:1fr;height:auto}
+  .ib-list{border-right:0;border-bottom:1px solid var(--line);max-height:320px}
+  .msgs{min-height:320px}
+  .ib-thread .hd{flex-wrap:wrap;gap:10px;padding:12px 14px}
+  .ib-thread .hd>div{min-width:0}
+  .ib-thread .hd span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;max-width:220px}
+  .msg{max-width:88%}
+  .composer{flex-wrap:wrap}.composer .in{flex:1 0 100%;order:-1}
+  .f2,.f3{grid-template-columns:1fr}
+  .week{grid-template-columns:44px repeat(3,1fr)}.week .d4,.week .d5{display:none}
+  .alert{grid-template-columns:auto 1fr}.alert .acts{grid-column:2;justify-content:flex-start}
+  .perm{grid-template-columns:1fr repeat(3,60px);padding:10px 18px}
+  .tbl th,.tbl td{padding:10px 18px}
+  .play .chat{height:auto;min-height:460px}
+}
+
+.set{display:none}.set.on{display:block}
+</style>
+</head>
+<body>
+<header class="mbar">
+  <button class="btn icon" id="menu" aria-label="Abrir menu"><svg class="i" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  <div class="brand" style="margin:0;padding:0"><div class="brand-mark"><svg viewBox="0 0 24 24"><path d="M4 12h5l2-5 3 10 2-5h4"/></svg></div><b>CotaFlow</b></div>
+  <button class="btn icon" id="theme-m" aria-label="Alternar tema"><svg class="i" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c0-.5 0-1-.1-1.4A5.5 5.5 0 0 1 12.4 3.1 9 9 0 0 0 12 3z"/></svg></button>
+</header>
+<div class="scrim" id="scrim"></div>
+<aside class="side" id="side">
+  <div class="brand"><div class="brand-mark"><svg viewBox="0 0 24 24"><path d="M4 12h5l2-5 3 10 2-5h4"/></svg></div><b>CotaFlow</b><span>AI Sales OS</span></div>
+  <nav class="nav">
+    <a href="#visao-geral" data-view="visao-geral"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Visão geral</a>
+    <a href="#conversas" data-view="conversas"><svg class="i" viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/></svg>Conversas<span class="c">17</span></a>
+    <a href="#crm" data-view="crm"><svg class="i" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="12" r="2"/><circle cx="6" cy="18" r="2"/><path d="M8 6h4a4 4 0 0 1 4 4M8 18h4a4 4 0 0 0 4-4"/></svg>CRM</a>
+    <a href="#agentes" data-view="agentes"><svg class="i" viewBox="0 0 24 24"><rect x="4" y="7" width="16" height="12" rx="2"/><path d="M12 3v4M9 13h.01M15 13h.01"/></svg>Agentes</a>
+    <a href="#testar" data-view="testar"><svg class="i" viewBox="0 0 24 24"><path d="M5 19l4-1 10-10-3-3L6 15z"/></svg>Testar agente</a>
+    <a href="#agenda" data-view="agenda"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Agenda</a>
+    <div class="sep"></div>
+    <a href="#integracoes" data-view="integracoes"><svg class="i" viewBox="0 0 24 24"><path d="M9 3v4M15 3v4M7 7h10v5a5 5 0 0 1-10 0zM12 17v4"/></svg>Integrações</a>
+    <a href="#conhecimento" data-view="conhecimento"><svg class="i" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>Conhecimento</a>
+    <a href="#alertas" data-view="alertas"><svg class="i" viewBox="0 0 24 24"><path d="M6 17V11a6 6 0 0 1 12 0v6l2 2H4zM10 21h4"/></svg>Alertas<span class="c w">1</span></a>
+    <a href="#configuracoes" data-view="configuracoes"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/></svg>Configurações</a>
+  </nav>
+  <div class="foot">
+    <div class="status"><span class="dot"></span>Agente operando</div>
+    <p>Acompanha cada lead até a reunião ou até existir motivo claro para encerrar.</p>
+    <div class="acct"><div class="av">B</div><div><b>Bruno</b><span>Administrador · BR Veículos</span></div></div>
+  </div>
+</aside>
+
+<main>
+<!-- ================= VISÃO GERAL ================= -->
+<section class="view" id="v-visao-geral">
+  <div class="top">
+    <div><h1>Visão geral</h1><div class="meta"><span class="dot"></span>Operação em tempo real · atualizado há poucos segundos</div></div>
+    <div class="right">
+      <div class="seg"><button>Hoje</button><button class="on">7 dias</button><button>30 dias</button></div>
+      <button class="btn icon" id="theme" aria-label="Alternar tema"><svg class="i" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c0-.5 0-1-.1-1.4A5.5 5.5 0 0 1 12.4 3.1 9 9 0 0 0 12 3z"/></svg></button>
+      <button class="btn"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Novo lead</button>
+      <a class="btn pri" href="#testar">Testar agente</a>
+    </div>
+  </div>
+  <section class="stats">
+    <div class="stat"><div class="l">Leads hoje<span class="d up">+18%</span></div><div class="v num">42</div><div class="h">36 ontem no mesmo horário</div>
+      <svg class="sp" viewBox="0 0 200 28" preserveAspectRatio="none"><path d="M0 22 L28 20 L56 21 L84 14 L112 15 L140 8 L168 9 L200 3" stroke="var(--spark)" stroke-width="1.5" fill="none" vector-effect="non-scaling-stroke"/></svg></div>
+    <div class="stat"><div class="l">Conversas ativas<span class="d nt">11 só IA</span></div><div class="v num">17</div><div class="h">65% conduzidas sem humano</div>
+      <svg class="sp" viewBox="0 0 200 28" preserveAspectRatio="none"><path d="M0 14 L28 18 L56 12 L84 14 L112 10 L140 12 L168 6 L200 8" stroke="var(--spark)" stroke-width="1.5" fill="none" vector-effect="non-scaling-stroke"/></svg></div>
+    <div class="stat"><div class="l">Reuniões agendadas<span class="d up">+2</span></div><div class="v num">8</div><div class="h">5 sem intervenção humana</div>
+      <svg class="sp" viewBox="0 0 200 28" preserveAspectRatio="none"><path d="M0 24 L28 24 L56 18 L84 18 L112 12 L140 12 L168 5 L200 4" stroke="var(--spark)" stroke-width="1.5" fill="none" vector-effect="non-scaling-stroke"/></svg></div>
+    <div class="stat"><div class="l">Ligações da IA<span class="d nt">2 viraram reunião</span></div><div class="v num">3</div><div class="h">4 min em média por ligação</div>
+      <svg class="sp" viewBox="0 0 200 28" preserveAspectRatio="none"><path d="M0 24 L40 24 L68 16 L110 16 L136 8 L172 8 L200 6" stroke="var(--spark)" stroke-width="1.5" fill="none" vector-effect="non-scaling-stroke"/></svg></div>
+  </section>
+  <section class="grid">
+    <div class="card">
+      <div class="hd"><h2>Conversas e reuniões<span>últimas 24 horas</span></h2><div class="legend"><span><i style="background:var(--accent)"></i>Conversas</span><span><i style="background:var(--ghost)"></i>Reuniões</span></div></div>
+      <div class="bd"><div class="chart">
+        <div class="y"><span>40</span><span>30</span><span>20</span><span>10</span><span>0</span></div>
+        <svg viewBox="0 0 1000 240" preserveAspectRatio="none">
+          <defs><linearGradient id="a" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="var(--accent)" stop-opacity=".10"/><stop offset="1" stop-color="var(--accent)" stop-opacity="0"/></linearGradient></defs>
+          <g stroke="var(--grid)"><line x1="0" x2="1000" y1="0" y2="0"/><line x1="0" x2="1000" y1="60" y2="60"/><line x1="0" x2="1000" y1="120" y2="120"/><line x1="0" x2="1000" y1="180" y2="180"/><line x1="0" x2="1000" y1="240" y2="240"/></g>
+          <path fill="url(#a)" d="M0 207 C60 203 80 199 120 188 S200 157 250 157 S330 146 380 116 S470 74 520 70 S600 52 640 61 S720 94 760 83 S840 44 900 35 S970 41 1000 37 V240 H0Z"/>
+          <path fill="none" stroke="var(--accent-line)" stroke-width="1.8" vector-effect="non-scaling-stroke" d="M0 207 C60 203 80 199 120 188 S200 157 250 157 S330 146 380 116 S470 74 520 70 S600 52 640 61 S720 94 760 83 S840 44 900 35 S970 41 1000 37"/>
+          <path fill="none" stroke="var(--ghost)" stroke-width="1.8" vector-effect="non-scaling-stroke" d="M0 236 C80 234 120 231 180 225 S280 214 340 207 S440 192 500 181 S600 166 660 170 S760 155 820 144 S920 133 1000 127"/>
+          <line x1="710" x2="710" y1="0" y2="240" stroke="var(--line2)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
+        </svg>
+        <div class="tip"><b>hoje · 09:00</b><span><i style="background:#8FA5F5"></i>25 conversas</span><span><i style="background:var(--ghost)"></i>9 reuniões</span></div>
+        <div class="x"><span>15h</span><span>18h</span><span>21h</span><span>00h</span><span>03h</span><span>06h</span><span>09h</span><span>12h</span><span>agora</span></div>
+      </div></div>
+    </div>
+    <div class="card">
+      <div class="hd"><h2>Autonomia do agente</h2></div>
+      <div class="bd auto">
+        <div class="big num">77%</div><p>da operação anda sem intervenção humana</p>
+        <div class="track"><i style="width:77%;background:var(--accent)"></i><i style="width:17%;background:var(--ghost)"></i><i style="width:6%;background:var(--warn)"></i></div>
+        <div class="lg"><span><i style="background:var(--accent)"></i>Só IA</span><span><i style="background:var(--ghost)"></i>Com humano</span><span><i style="background:var(--warn)"></i>Escalado</span></div>
+        <div class="kv"><span>Respostas em até 1 minuto</span><b>98%</b></div>
+        <div class="kv"><span>Objeções resolvidas pela IA</span><b>84%</b></div>
+        <div class="kv"><span>Leads sem resposta</span><b>0</b></div>
+        <div class="kv"><span>Escaladas hoje</span><b>1</b></div>
+      </div>
+    </div>
+  </section>
+  <section class="grid">
+    <div class="card">
+      <div class="hd"><h2>Operação do agente<span>eventos que mudaram o estado de leads</span></h2><a class="btn" href="#conversas">Ver todas</a></div>
+      <div class="row"><div class="ic ia"><svg class="i" viewBox="0 0 24 24"><path d="M5 12l4 4L19 6"/></svg></div><div><b>Ana Martins</b><p>Objeção de preço identificada e tratada com a tabela de diferenciais</p></div><div class="r"><span class="tag ia">IA</span><br>há 2 min</div></div>
+      <div class="row"><div class="ic ok"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></div><div><b>Carlos Silva</b><p>Reunião criada para amanhã às 14:00 com Juliana, do comercial</p></div><div class="r"><span class="tag ok">Reunião</span><br>há 6 min</div></div>
+      <div class="row"><div class="ic w"><svg class="i" viewBox="0 0 24 24"><path d="M12 8v5M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg></div><div><b>Marcos Pereira</b><p>Pediu 22% de desconto, acima do limite autorizado — negociação pausada</p></div><div class="r"><span class="tag w">Escalado</span><br>há 11 min</div></div>
+      <div class="row"><div class="ic ia"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><div><b>Rafael Souza</b><p>Follow-up programado para amanhã às 9:00 após 2 dias sem resposta</p></div><div class="r"><span class="tag ia">IA</span><br>há 14 min</div></div>
+      <div class="row"><div class="ic ia"><svg class="i" viewBox="0 0 24 24"><path d="M22 16.9A2 2 0 0 1 20 19a17 17 0 0 1-15-15 2 2 0 0 1 2-2h3l2 5-2 1a12 12 0 0 0 5 5l1-2 5 2z"/></svg></div><div><b>Lojas Vitória</b><p>Ligação de 4 min concluída — proposta final marcada para amanhã 16:30</p></div><div class="r"><span class="tag ia">Ligação</span><br>há 22 min</div></div>
+      <div class="row"><div class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></div><div><b>Beatriz Lima</b><p>Fora do perfil (menos de 5 funcionários) — encerrada com motivo registrado</p></div><div class="r"><span class="tag">Encerrado</span><br>há 31 min</div></div>
+    </div>
+    <div class="stack">
+      <div class="card">
+        <div class="hd"><h2>Precisa de você<span>1 decisão</span></h2></div>
+        <div class="exc">
+          <div class="who"><div class="av">MP</div><div><b>Marcos Pereira</b><span>Distribuidora Norte</span></div><span class="t">há 11 min</span></div>
+          <q>Consigo fechar hoje se sair por 22% abaixo da tabela.</q>
+          <dl><div><dt>Seu limite</dt><dd>15%</dd></div><div><dt>Ticket anual</dt><dd>R$ 48k</dd></div><div><dt>Engajamento</dt><dd>Alto</dd></div></dl>
+          <div class="acts"><button class="btn pri">Aprovar 22%</button><button class="btn">Contrapropor 15%</button><button class="btn ghost">Recusar</button></div>
+        </div>
+        <div class="quiet"><svg class="i" viewBox="0 0 24 24"><path d="M5 12l4 4L19 6"/></svg><span><b>Nenhum lead esperando resposta.</b> 2 alertas de baixa prioridade na fila.</span></div>
+      </div>
+      <div class="card">
+        <div class="hd"><h2>Amanhã<span>3 compromissos</span></h2></div>
+        <div class="slot"><time>09:00</time><div><b>Rafael Souza</b><span>Follow-up</span></div><span class="tag ia">IA</span></div>
+        <div class="slot"><time>14:00</time><div><b>Carlos Silva</b><span>Apresentação com Juliana</span></div><span class="tag">Você</span></div>
+        <div class="slot"><time>16:30</time><div><b>Lojas Vitória</b><span>Proposta final</span></div><span class="tag ia">IA</span></div>
+      </div>
+    </div>
+  </section>
+</section>
+
+<!-- ================= CONVERSAS ================= -->
+<section class="view" id="v-conversas">
+  <div class="pg">
+    <div><h1>Conversas</h1><div class="meta">Inbox do WhatsApp com histórico, contexto do lead e tomada humana quando necessário.</div></div>
+    <div class="right"><span class="chip live"><span class="dot"></span>17 ativas · 11 só IA</span><button class="btn">Filtros</button></div>
+  </div>
+  <div class="inbox">
+    <div class="ib-list">
+      <div class="srch"><input class="in" placeholder="Buscar por nome ou telefone"></div>
+      <div class="filters"><button class="on">Todas <span class="mono">17</span></button><button>IA</button><button>Humano</button><button>Escaladas <span class="mono" style="color:var(--warn)">1</span></button></div>
+      <div class="items">
+        <button class="conv"><div class="av">AM</div><div><b>Ana Martins</b><p>Entendi. E o prazo de entrega fica em quanto tempo?</p></div><div class="m">14:31<br><span class="n">2</span></div></button>
+        <button class="conv on"><div class="av" style="background:var(--warn-soft);color:var(--warn)">MP</div><div><b>Marcos Pereira<span class="w"></span></b><p>Consigo fechar hoje se sair por 22% abaixo…</p></div><div class="m">14:21</div></button>
+        <button class="conv"><div class="av">CS</div><div><b>Carlos Silva</b><p>Perfeito, amanhã às 14h então. Obrigado!</p></div><div class="m">14:26</div></button>
+        <button class="conv"><div class="av">LV</div><div><b>Lojas Vitória</b><p>Ligação concluída · 4 min 12 s</p></div><div class="m">14:10</div></button>
+        <button class="conv"><div class="av">RS</div><div><b>Rafael Souza</b><p>Follow-up agendado para amanhã 09:00</p></div><div class="m">ontem</div></button>
+        <button class="conv"><div class="av">JR</div><div><b>Juliana Ramos</b><p>Vocês trabalham com financiamento?</p></div><div class="m">13:48</div></button>
+        <button class="conv"><div class="av">PA</div><div><b>Paulo Andrade</b><p>Tenho um Civic 2019 pra dar de entrada</p></div><div class="m">13:15</div></button>
+        <button class="conv"><div class="av">BL</div><div><b>Beatriz Lima</b><p>Encerrada — fora do perfil</p></div><div class="m">12:40</div></button>
+        <button class="conv"><div class="av">FM</div><div><b>Fernanda Melo</b><p>Qual o valor do Corolla 2021?</p></div><div class="m">11:52</div></button>
+      </div>
+    </div>
+    <div class="ib-thread">
+      <div class="hd">
+        <div style="display:flex;align-items:center;gap:12px"><div class="av" style="background:var(--warn-soft);color:var(--warn)">MP</div><div><b>Marcos Pereira</b><span>+55 77 99812-4410 · Distribuidora Norte</span></div></div>
+        <div style="display:flex;gap:6px;align-items:center"><span class="tag w" style="white-space:nowrap;margin:0">Pausada · aguardando você</span><button class="btn">Ver no CRM</button></div>
+      </div>
+      <div class="msgs">
+        <span class="sysline">conversa iniciada · 13:58 · atendente geral</span>
+        <div class="msg in">Boa tarde! Vi o anúncio da frota de utilitários de vocês. Preciso de 4 unidades pra distribuição.<span class="t">13:58</span></div>
+        <div class="msg out"><span class="who">Marcos Junior · IA</span>Boa tarde, Marcos! Ótimo, temos disponibilidade pra frota. Pra te passar a proposta certa: são veículos pra carga leve dentro da cidade ou rota intermunicipal?<span class="t">13:58</span></div>
+        <div class="msg in">Rota intermunicipal, Conquista → Jequié → Itabuna. Carga até 1,2 t.<span class="t">14:02</span></div>
+        <div class="msg out"><span class="who">Marcos Junior · IA</span>Perfeito. Pra esse uso a Fiorino Endurance 2024 é a mais indicada: 650 kg úteis, mas pra 1,2 t o ideal é a Strada Cabine Plus ou a Saveiro Robust. Posso montar duas opções com o valor de frota (4 unidades)?<span class="t">14:03</span></div>
+        <div class="msg in">Pode. Qual o valor unitário da Strada?<span class="t">14:09</span></div>
+        <div class="msg out"><span class="who">Marcos Junior · IA</span>Strada Cabine Plus 2024, tabela R$ 118.900. Com a condição de frota (4+) fica R$ 101.065 por unidade — 15% abaixo da tabela. Emplacamento e revisão de entrega inclusos.<span class="t">14:10</span></div>
+        <div class="msg in">Consigo fechar hoje se sair por 22% abaixo da tabela.<span class="t">14:21</span></div>
+        <span class="sysline">IA pausou a negociação · desconto acima do limite (15%) · aguardando gestor</span>
+      </div>
+      <div class="composer">
+        <button class="btn">Assumir conversa</button>
+        <input class="in" placeholder="Responder como você — a IA fica pausada nesta conversa">
+        <button class="btn pri">Enviar</button>
+      </div>
+    </div>
+    <div class="ib-ctx">
+      <div class="lead"><b>Marcos Pereira</b><span>Distribuidora Norte · Comercial</span></div>
+      <div><h3>Etapa no funil</h3><div class="stage"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></div><div style="display:flex;justify-content:space-between;font-size:11.5px;color:var(--tx3);margin-top:6px;font-family:var(--mono)"><span>Objeção</span><span>3 / 5</span></div></div>
+      <div><h3>Qualificação</h3><div class="kvs">
+        <div><span>Necessidade</span><b>4 utilitários · 1,2 t</b></div>
+        <div><span>Uso</span><b>Rota intermunicipal</b></div>
+        <div><span>Orçamento</span><b>R$ 380–420 mil</b></div>
+        <div><span>Urgência</span><b>Fecha hoje</b></div>
+        <div><span>Origem</span><b>Anúncio Meta</b></div>
+      </div></div>
+      <div><h3>Decisão pendente</h3><div class="kvs">
+        <div><span>Pedido</span><b>22% off</b></div>
+        <div><span>Seu limite</span><b>15%</b></div>
+        <div><span>Ticket</span><b>R$ 404 mil</b></div>
+      </div></div>
+      <div class="acts"><button class="btn pri">Aprovar 22%</button><button class="btn">Contrapropor 15%</button><button class="btn ghost">Recusar</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CRM ================= -->
+<section class="view" id="v-crm">
+  <div class="pg">
+    <div><h1>Pipeline comercial</h1><div class="meta">Leads do WhatsApp e do simulador percorrem o mesmo funil. O agente move etapas quando identifica uma mudança real; você também pode mover.</div></div>
+    <div class="right"><span class="chip">R$ 1,24 mi em aberto</span><div class="seg"><button class="on">Kanban</button><button>Lista</button></div><button class="btn"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Novo lead</button></div>
+  </div>
+  <div class="kanban">
+    <div class="col">
+      <div class="ch"><div><b>Novo lead</b><span class="sum">R$ 212 mil</span></div><span class="c">4</span></div>
+      <div class="body">
+        <div class="lead"><div class="n"><b>Fernanda Melo</b><span class="tag ia">IA</span></div><p>Perguntou valor do Corolla 2021 · sem qualificação ainda</p><div class="f"><span>11:52</span><span class="val">—</span></div></div>
+        <div class="lead"><div class="n"><b>Paulo Andrade</b><span class="tag ia">IA</span></div><p>Tem Civic 2019 pra entrada · interesse em SUV</p><div class="f"><span>13:15</span><span class="val">R$ 140k</span></div></div>
+        <div class="lead"><div class="n"><b>Diego Nunes</b><span class="tag ia">IA</span></div><p>Veio do site · quer test drive no fim de semana</p><div class="f"><span>10:04</span><span class="val">R$ 72k</span></div></div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="ch"><div><b>Qualificando</b><span class="sum">R$ 186 mil</span></div><span class="c">3</span></div>
+      <div class="body">
+        <div class="lead"><div class="n"><b>Juliana Ramos</b><span class="tag ia">IA</span></div><p>Financiamento em 48x · renda confirmada · escolhendo entre 2 modelos</p><div class="f"><span>13:48</span><span class="val">R$ 96k</span></div></div>
+        <div class="lead"><div class="n"><b>Ana Martins</b><span class="tag ia">IA</span></div><p>Objeção de preço tratada · perguntou prazo de entrega</p><div class="f"><span>14:31</span><span class="val">R$ 90k</span></div></div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="ch"><div><b>Objeção</b><span class="sum">R$ 404 mil</span></div><span class="c">1</span></div>
+      <div class="body">
+        <div class="lead" style="border-color:var(--warn)"><div class="n"><b>Marcos Pereira</b><span class="tag w">Escalado</span></div><p>Frota de 4 Strada · pediu 22% off · aguardando gestor</p><div class="f"><span>14:21</span><span class="val">R$ 404k</span></div></div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="ch"><div><b>Follow-up</b><span class="sum">R$ 118 mil</span></div><span class="c">2</span></div>
+      <div class="body">
+        <div class="lead"><div class="n"><b>Rafael Souza</b><span class="tag ia">IA</span></div><p>2 dias sem resposta · retomada amanhã 09:00</p><div class="f"><span>ontem</span><span class="val">R$ 58k</span></div></div>
+        <div class="lead"><div class="n"><b>Bruno Silva</b><span class="tag">Teste</span></div><p>Corolla sedã 2014 · 55–60 mil · pesquisando</p><div class="f"><span>10 set</span><span class="val">R$ 60k</span></div></div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="ch"><div><b>Agendado</b><span class="sum">R$ 322 mil</span></div><span class="c">3</span></div>
+      <div class="body">
+        <div class="lead"><div class="n"><b>Carlos Silva</b><span class="tag ok">Reunião</span></div><p>Apresentação amanhã 14:00 com Juliana</p><div class="f"><span>amanhã</span><span class="val">R$ 132k</span></div></div>
+        <div class="lead"><div class="n"><b>Lojas Vitória</b><span class="tag ok">Reunião</span></div><p>Proposta final amanhã 16:30 · após ligação da IA</p><div class="f"><span>amanhã</span><span class="val">R$ 190k</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= AGENTES ================= -->
+<section class="view" id="v-agentes">
+  <div class="pg">
+    <div><h1>Agentes</h1><div class="meta">Configure identidade, objetivo, conhecimento, qualificação, handoff, canal e follow-up — sem tocar em prompt.</div></div>
+    <div class="right"><button class="btn pri"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Criar agente</button></div>
+  </div>
+  <div class="agents">
+    <div class="card">
+      <div class="hd"><h2>Seus agentes<span>2</span></h2></div>
+      <button class="agent-item on"><div class="ic"><svg class="i" viewBox="0 0 24 24"><rect x="4" y="7" width="16" height="12" rx="2"/><path d="M12 3v4M9 13h.01M15 13h.01"/></svg></div><div><b>Atendente geral</b><span>WhatsApp · 17 conversas</span></div><span class="tag ok">Publicado</span></button>
+      <button class="agent-item"><div class="ic"><svg class="i" viewBox="0 0 24 24"><rect x="4" y="7" width="16" height="12" rx="2"/><path d="M12 3v4M9 13h.01M15 13h.01"/></svg></div><div><b>Pós-venda</b><span>Sem canal</span></div><span class="tag">Rascunho</span></button>
+      <div class="quiet" style="border-top:1px solid var(--line)"><span>Um agente por canal. O mesmo agente pode usar várias bases de conhecimento.</span></div>
+    </div>
+    <div class="card">
+      <div class="hd">
+        <div style="display:flex;align-items:center;gap:12px"><div class="ic" style="width:36px;height:36px;border:1px solid var(--line);border-radius:var(--r);display:grid;place-items:center;color:var(--tx2)"><svg class="i" viewBox="0 0 24 24"><rect x="4" y="7" width="16" height="12" rx="2"/><path d="M12 3v4M9 13h.01M15 13h.01"/></svg></div><div><h2>Atendente geral</h2><p style="font-size:12.5px;color:var(--tx3);margin-top:2px">Versão 4 · publicada há 3 dias · salvo automaticamente</p></div></div>
+        <div style="display:flex;gap:6px"><a class="btn" href="#testar">Testar</a><button class="btn pri">Publicar alterações</button></div>
+      </div>
+      <div class="steps">
+        <button class="on"><span class="n">1</span>Identidade</button>
+        <button class="done"><span class="n">2</span>Objetivo</button>
+        <button class="done"><span class="n">3</span>Conhecimento</button>
+        <button class="done"><span class="n">4</span>Qualificação</button>
+        <button><span class="n">5</span>Handoff</button>
+        <button><span class="n">6</span>Canal e agenda</button>
+        <button><span class="n">7</span>Follow-up</button>
+      </div>
+      <div class="form">
+        <div class="f2">
+          <div class="field"><label>Nome interno</label><input class="in" value="Atendente geral"><span class="hint">Só a equipe vê.</span></div>
+          <div class="field"><label>Como ele se apresenta</label><input class="in" value="Marcos Junior"><span class="hint">Nome que o cliente vê no WhatsApp.</span></div>
+        </div>
+        <div class="f2">
+          <div class="field"><label>Tom de voz</label><select class="in"><option>Consultivo, objetivo e humano</option><option>Formal</option><option>Descontraído</option></select></div>
+          <div class="field"><label>Tamanho das respostas</label><select class="in"><option>Curtas e naturais</option><option>Médias</option><option>Detalhadas</option></select></div>
+        </div>
+        <div class="field"><label>Apresentação inicial</label><textarea class="in">Oi! Sou o Marcos, da BR Veículos. Posso te ajudar a encontrar o carro certo e já deixar uma visita agendada. Me conta o que você está procurando?</textarea><span class="hint">Enviada na primeira mensagem de cada conversa nova.</span></div>
+        <div class="f3">
+          <label class="switch"><input type="checkbox" checked><i></i>Usar emojis com moderação</label>
+          <label class="switch"><input type="checkbox" checked><i></i>Chamar o cliente pelo nome</label>
+          <label class="switch"><input type="checkbox"><i></i>Se identificar como IA quando perguntado</label>
+        </div>
+      </div>
+      <div class="ft"><button class="btn ghost" style="border-color:transparent;background:none;color:var(--tx3)">Descartar</button><button class="btn">Próximo: Objetivo</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TESTAR AGENTE ================= -->
+<section class="view" id="v-testar">
+  <div class="pg">
+    <div><h1>Testar agente</h1><div class="meta">Converse como um cliente faria no WhatsApp. Mesmo motor, contexto e ferramentas — mas isolado do canal real.</div></div>
+    <div class="right"><span class="chip">Ambiente de teste</span><select class="in" style="width:auto"><option>Atendente geral — v4</option><option>Atendente geral — rascunho</option><option>Pós-venda — rascunho</option></select><button class="btn">Nova sessão</button></div>
+  </div>
+  <div class="play">
+    <div class="card chat">
+      <div class="hd"><div><h2>Sessão de teste<span>lead de teste criado no CRM real</span></h2></div><span class="tag ia">Marcos Junior · IA</span></div>
+      <div class="msgs">
+        <div class="msg in">Olá! Queria entender melhor como funciona.<span class="t">19:14</span></div>
+        <div class="msg out"><span class="who">Marcos Junior · IA</span>Oi! Sou o Marcos, da BR Veículos. A gente trabalha com seminovos revisados e frota. Você está procurando algo pra uso pessoal ou pra empresa?<span class="t">19:14</span></div>
+        <div class="msg in">Pessoal. Tô só pesquisando ainda, um sedã até 60 mil.<span class="t">19:15</span></div>
+        <div class="msg out"><span class="who">Marcos Junior · IA</span>Tranquilo, sem pressa. Nessa faixa temos Corolla 2014 e Civic 2015, os dois com revisão e garantia de 6 meses. Quer que eu te mande os dois com fotos, ou prefere já dar uma olhada aqui na loja?<span class="t">19:15</span></div>
+      </div>
+      <div class="chips"><button>Quanto custa?</button><button>Aceita troca?</button><button>Quero falar com uma pessoa.</button><button>Tem financiamento?</button></div>
+      <div class="composer" style="margin-top:14px"><input class="in" placeholder="Digite como se fosse um cliente…"><button class="btn pri">Enviar</button></div>
+    </div>
+    <div class="stack">
+      <div class="card">
+        <div class="hd"><h2>Debug da execução</h2><span class="tag ok">200 ms</span></div>
+        <div class="dbg">
+          <div><span class="k">intent</span><span class="v">pesquisa_inicial</span></div>
+          <div><span class="k">etapa</span><span class="v">qualificando</span></div>
+          <div><span class="k">rag</span><span class="v">3 trechos · base geral</span></div>
+          <div><span class="k">tools</span><span class="v">crm.update_lead <span class="ok">✓</span></span></div>
+          <div><span class="k">campos</span><span class="v">need, budget, urgency</span></div>
+          <div><span class="k">handoff</span><span class="v">não acionado</span></div>
+          <div><span class="k">tokens</span><span class="v">1.842 in · 96 out</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="hd"><h2>Sessões recentes</h2></div>
+        <div class="sess"><b>Sedã até 60 mil<span>19:14</span></b><p>Tranquilo, sem pressa. Nessa faixa temos Corolla…</p></div>
+        <div class="sess"><b>Teste de handoff<span>ontem</span></b><p>Vou te passar pro Bruno, que cuida disso…</p></div>
+        <div class="sess"><b>Financiamento 48x<span>10 set</span></b><p>Com entrada de 20% a parcela fica em torno…</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= AGENDA ================= -->
+<section class="view" id="v-agenda">
+  <div class="pg">
+    <div><h1>Agenda</h1><div class="meta">Horários, duração, capacidade e limites que a IA usa pra marcar reuniões sozinha.</div></div>
+    <div class="right"><div class="seg"><button>Dia</button><button class="on">Semana</button><button>Mês</button></div><button class="btn">Hoje</button><button class="btn pri">Nova reunião</button></div>
+  </div>
+  <div class="agenda-wrap">
+    <div class="stack">
+      <div class="card">
+        <div class="hd"><h2>Disponibilidade</h2></div>
+        <div class="form" style="gap:14px">
+          <div class="f2"><div class="field"><label>Início</label><input class="in" value="08:00"></div><div class="field"><label>Fim</label><input class="in" value="18:00"></div></div>
+          <div class="field"><label>Dias</label><div style="display:flex;gap:4px">
+            <button class="btn" style="padding:6px 0;flex:1;justify-content:center;background:var(--tx);color:var(--bg);border-color:var(--tx)">S</button><button class="btn" style="padding:6px 0;flex:1;justify-content:center;background:var(--tx);color:var(--bg);border-color:var(--tx)">T</button><button class="btn" style="padding:6px 0;flex:1;justify-content:center;background:var(--tx);color:var(--bg);border-color:var(--tx)">Q</button><button class="btn" style="padding:6px 0;flex:1;justify-content:center;background:var(--tx);color:var(--bg);border-color:var(--tx)">Q</button><button class="btn" style="padding:6px 0;flex:1;justify-content:center;background:var(--tx);color:var(--bg);border-color:var(--tx)">S</button><button class="btn" style="padding:6px 0;flex:1;justify-content:center">S</button><button class="btn" style="padding:6px 0;flex:1;justify-content:center">D</button>
+          </div></div>
+          <div class="f2"><div class="field"><label>Duração padrão</label><select class="in"><option>45 min</option><option>30 min</option><option>60 min</option></select></div><div class="field"><label>Intervalo</label><select class="in"><option>15 min</option><option>Nenhum</option><option>30 min</option></select></div></div>
+          <div class="field"><label>Máximo por dia</label><input class="in" value="6"><span class="hint">A IA para de oferecer horários quando o dia enche.</span></div>
+          <label class="switch"><input type="checkbox" checked><i></i>Bloquear almoço (12:00–13:00)</label>
+        </div>
+      </div>
+      <div class="card">
+        <div class="hd"><h2>Esta semana</h2></div>
+        <div class="bd" style="padding-top:18px">
+          <div class="kv" style="border:0;padding-top:0"><span>Reuniões marcadas</span><b>11</b></div>
+          <div class="kv"><span>Pela IA</span><b>8</b></div>
+          <div class="kv"><span>Comparecimento</span><b>82%</b></div>
+          <div class="cap"><span style="font-size:12.5px;color:var(--tx3)">Capacidade</span><div class="track"><i style="width:37%;background:var(--accent)"></i></div><b class="mono">11/30</b></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="hd"><h2>8 – 12 de setembro</h2><div style="display:flex;gap:4px"><button class="btn icon"><svg class="i" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button><button class="btn icon"><svg class="i" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button></div></div>
+      <div class="week">
+        <div class="h" style="border-left:0"></div>
+        <div class="h">seg<b>8</b></div><div class="h">ter<b>9</b></div><div class="h">qua<b>10</b></div><div class="h d4">qui<b>11</b></div><div class="h d5 today">sex<b>12</b></div>
+        <div class="t">08:00</div><div class="c"></div><div class="c"><div class="ev"><b>Juliana Ramos</b>Visita · 08:30</div></div><div class="c"></div><div class="c d4"></div><div class="c d5"></div>
+        <div class="t">09:00</div><div class="c"><div class="ev hm"><b>Reunião de equipe</b>09:00</div></div><div class="c"></div><div class="c"><div class="ev"><b>Diego Nunes</b>Test drive</div></div><div class="c d4"><div class="ev"><b>Rafael Souza</b>Follow-up · IA</div></div><div class="c d5"></div>
+        <div class="t">10:00</div><div class="c"></div><div class="c"><div class="ev"><b>Paulo Andrade</b>Avaliação Civic</div></div><div class="c"></div><div class="c d4"></div><div class="c d5"><div class="ev"><b>Fernanda Melo</b>Visita</div></div>
+        <div class="t">11:00</div><div class="c"></div><div class="c"></div><div class="c"><div class="ev"><b>Ana Martins</b>Proposta</div></div><div class="c d4"></div><div class="c d5"></div>
+        <div class="t">12:00</div><div class="c off"></div><div class="c off"></div><div class="c off"></div><div class="c off d4"></div><div class="c off d5"></div>
+        <div class="t">13:00</div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c d4"></div><div class="c d5"></div>
+        <div class="t">14:00</div><div class="c"><div class="ev"><b>Lojas Vitória</b>Frota · 3 unid.</div></div><div class="c"></div><div class="c"></div><div class="c d4"><div class="ev"><b>Carlos Silva</b>Apresentação</div></div><div class="c d5"></div>
+        <div class="t">15:00</div><div class="c"></div><div class="c"><div class="ev w"><b>Marcos Pereira</b>Pendente · decisão</div></div><div class="c"></div><div class="c d4"></div><div class="c d5"></div>
+        <div class="t">16:00</div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c d4"><div class="ev"><b>Lojas Vitória</b>Proposta final · 16:30</div></div><div class="c d5"></div>
+        <div class="t">17:00</div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c d4"></div><div class="c d5"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= INTEGRAÇÕES ================= -->
+<section class="view" id="v-integracoes">
+  <div class="pg">
+    <div><h1>Integrações</h1><div class="meta">Canais e sistemas que alimentam a operação. O WhatsApp é o primeiro canal do MVP.</div></div>
+  </div>
+  <div class="stack">
+    <div class="card">
+      <div class="ch-card"><div class="lg wa"><svg class="i" viewBox="0 0 24 24" style="width:20px;height:20px"><path d="M4 20l1.3-3.8A8 8 0 1 1 8 18.7z"/></svg></div><div><b>WhatsApp Business</b><p>Conta Meta conectada. Cada número recebe um agente e um webhook próprios.</p></div><span class="tag ok pulse">Conectado</span></div>
+      <table class="tbl">
+        <thead><tr><th>Número</th><th>Nome exibido</th><th>Agente</th><th>Webhook</th><th>Últimas 24 h</th><th></th></tr></thead>
+        <tbody>
+          <tr><td class="mono">+55 77 3421-8800</td><td>BR Veículos</td><td>Atendente geral</td><td><span class="tag ok">Ativo</span></td><td class="mono">142 msgs</td><td style="text-align:right"><button class="btn">Gerenciar</button></td></tr>
+          <tr><td class="mono">+55 77 99101-2233</td><td>BR Veículos · Frota</td><td><span style="color:var(--tx3)">Sem agente</span></td><td><span class="tag">Aguardando</span></td><td class="mono">—</td><td style="text-align:right"><button class="btn">Vincular agente</button></td></tr>
+        </tbody>
+      </table>
+      <div class="ft" style="justify-content:space-between"><span style="font-size:12.5px;color:var(--tx3)">Use “Cadastrar número” para um número novo na Cloud API; “Conectar existente” mantém o número que já funciona no app.</span><div style="display:flex;gap:6px"><button class="btn">Conectar existente</button><button class="btn pri">Cadastrar número</button></div></div>
+    </div>
+    <div class="integ">
+      <div class="card"><div class="ch-card"><div class="lg"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></div><div><b>Google Calendar</b><p>Sincroniza reuniões marcadas pela IA com a agenda da equipe.</p></div><span class="tag ok">Conectado</span></div></div>
+      <div class="card"><div class="ch-card"><div class="lg"><svg class="i" viewBox="0 0 24 24"><path d="M22 16.9A2 2 0 0 1 20 19a17 17 0 0 1-15-15 2 2 0 0 1 2-2h3l2 5-2 1a12 12 0 0 0 5 5l1-2 5 2z"/></svg></div><div><b>Ligações por voz</b><p>A IA liga pro lead quando o WhatsApp não avança. Número dedicado.</p></div><span class="tag ok">Ativo</span></div></div>
+      <div class="card"><div class="ch-card"><div class="lg"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01"/></svg></div><div><b>Instagram Direct</b><p>Mesmo agente respondendo no Direct.</p></div><span class="tag">Em breve</span></div></div>
+      <div class="card"><div class="ch-card"><div class="lg"><svg class="i" viewBox="0 0 24 24"><path d="M4 4h16v16H4zM4 8l8 6 8-6"/></svg></div><div><b>E-mail</b><p>Follow-up por e-mail quando o lead prefere.</p></div><span class="tag">Em breve</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CONHECIMENTO ================= -->
+<section class="view" id="v-conhecimento">
+  <div class="pg">
+    <div><h1>Base de conhecimento</h1><div class="meta">Documentos, FAQs e regras comerciais que os agentes podem usar sem inventar informação.</div></div>
+    <div class="right"><span class="chip">2 bases · 9 fontes prontas</span><button class="btn pri"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Nova base</button></div>
+  </div>
+  <div class="kb">
+    <div class="card">
+      <div class="hd"><h2>Bases</h2></div>
+      <button class="kb-item on"><div><b>Base geral</b><span>Empresa, atendimento, FAQ</span></div><span class="c">7</span></button>
+      <button class="kb-item"><div><b>Tabela e condições</b><span>Preços, descontos, frota</span></div><span class="c">2</span></button>
+      <div class="quiet" style="border-top:1px solid var(--line)"><span>Usada por: Atendente geral</span></div>
+    </div>
+    <div class="card">
+      <div class="hd"><div><h2>Base geral</h2><p style="font-size:12.5px;color:var(--tx3);margin-top:2px">Atualizada há 2 dias · 7 fontes · 48 trechos indexados</p></div><div style="display:flex;gap:6px"><button class="btn">Colar texto</button><button class="btn">Adicionar FAQ</button><button class="btn pri">Enviar arquivos</button></div></div>
+      <div class="drop"><b>Arraste PDF, DOCX, MD ou TXT aqui</b>até 20 MB por arquivo · o conteúdo é processado e revisado antes de ficar disponível pro agente</div>
+      <div style="padding:18px 26px 8px;font-size:12px;color:var(--tx3);font-weight:500">Fontes processadas</div>
+      <div class="src"><div class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6zM14 3v4h4"/></svg></div><div><b>05_faq-br-veiculos.md</b><span>12 trechos · atualizado 10 set</span></div><span class="sz">18 KB</span><span class="tag ok">Pronto</span></div>
+      <div class="src"><div class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6zM14 3v4h4"/></svg></div><div><b>01_empresa-e-atendimento.md</b><span>6 trechos · atualizado 10 set</span></div><span class="sz">9 KB</span><span class="tag ok">Pronto</span></div>
+      <div class="src"><div class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6zM14 3v4h4"/></svg></div><div><b>02_estoque-seminovos.pdf</b><span>14 trechos · atualizado 9 set</span></div><span class="sz">1,2 MB</span><span class="tag ok">Pronto</span></div>
+      <div class="src"><div class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6zM14 3v4h4"/></svg></div><div><b>03_garantia-e-revisao.md</b><span>5 trechos · atualizado 9 set</span></div><span class="sz">6 KB</span><span class="tag ok">Pronto</span></div>
+      <div class="src"><div class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6zM14 3v4h4"/></svg></div><div><b>04_financiamento-parceiros.pdf</b><span>8 trechos · atualizado 8 set</span></div><span class="sz">640 KB</span><span class="tag ok">Pronto</span></div>
+      <div class="src"><div class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6zM14 3v4h4"/></svg></div><div><b>06_objecoes-comuns.md</b><span>3 trechos · atualizado 8 set</span></div><span class="sz">4 KB</span><span class="tag ok">Pronto</span></div>
+      <div class="src"><div class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6zM14 3v4h4"/></svg></div><div><b>07_horarios-e-localizacao.md</b><span>processando…</span></div><span class="sz">2 KB</span><span class="tag ia">Indexando</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ALERTAS ================= -->
+<section class="view" id="v-alertas">
+  <div class="pg">
+    <div><h1>Alertas</h1><div class="meta">Quando a IA encontra algo fora das regras, a conversa pausa aqui até alguém resolver. Resolver libera o agente pra continuar.</div></div>
+    <div class="right"><span class="chip" style="color:var(--warn);border-color:var(--warn)">1 aguardando ação</span></div>
+  </div>
+  <div class="tabs"><button class="on">Pendentes<span class="c">1</span></button><button>Baixa prioridade<span class="c">2</span></button><button>Resolvidos<span class="c">14</span></button></div>
+  <div class="card">
+    <div class="alert">
+      <div class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M12 8v5M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg></div>
+      <div>
+        <b>Desconto acima do limite · Marcos Pereira</b>
+        <p>Lead pediu 22% sobre a tabela em frota de 4 Strada. Seu limite para frota é 15%. A IA pausou a negociação e explicou que precisava confirmar com o gestor.</p>
+        <q>Consigo fechar hoje se sair por 22% abaixo da tabela.</q>
+        <div class="meta"><span>há 11 min</span><span>Distribuidora Norte</span><span>R$ 404 mil</span><span>engajamento alto</span></div>
+      </div>
+      <div class="acts"><button class="btn pri">Aprovar 22%</button><button class="btn">Contrapropor 15%</button><a class="btn" href="#conversas">Abrir conversa</a><button class="btn ghost" style="border-color:transparent;background:none;color:var(--tx3)">Recusar</button></div>
+    </div>
+  </div>
+  <div style="padding:20px 0 8px;font-size:12px;color:var(--tx3);font-weight:500">Baixa prioridade</div>
+  <div class="card">
+    <div class="alert">
+      <div class="ic i"><svg class="i" viewBox="0 0 24 24"><path d="M12 16v-4M12 8h.01"/><circle cx="12" cy="12" r="9"/></svg></div>
+      <div><b>Pergunta sem resposta na base · Juliana Ramos</b><p>Lead perguntou se aceitam consórcio contemplado. Não há nada sobre isso na base; a IA respondeu que ia confirmar.</p><div class="meta"><span>há 40 min</span><span>sugestão: adicionar à base</span></div></div>
+      <div class="acts"><a class="btn" href="#conhecimento">Adicionar à base</a><button class="btn">Responder eu</button></div>
+    </div>
+    <div class="alert">
+      <div class="ic i"><svg class="i" viewBox="0 0 24 24"><path d="M12 16v-4M12 8h.01"/><circle cx="12" cy="12" r="9"/></svg></div>
+      <div><b>Número novo sem agente · +55 77 99101-2233</b><p>Mensagens chegando no número de frota sem agente vinculado. 3 contatos aguardando.</p><div class="meta"><span>há 2 h</span><span>Integrações</span></div></div>
+      <div class="acts"><a class="btn" href="#integracoes">Vincular agente</a></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CONFIGURAÇÕES ================= -->
+<section class="view" id="v-configuracoes">
+  <div class="pg">
+    <div><h1>Configurações</h1><div class="meta">Empresa, equipe, permissões e parâmetros que orientam a operação.</div></div>
+    <div class="right"><span class="chip mono">cotaflow-staging-cb1a94a6a8d7</span></div>
+  </div>
+  <div class="settings">
+    <div class="subnav">
+      <button class="on" data-set="empresa">Empresa<span>Identidade e dados básicos</span></button>
+      <button data-set="equipe">Funcionários<span>Equipe e acessos</span></button>
+      <button data-set="cargos">Cargos e permissões<span>Níveis de acesso</span></button>
+      <button data-set="operacao">Operação<span>Limites e parâmetros</span></button>
+    </div>
+    <div>
+      <div class="card set on" id="set-empresa">
+        <div class="hd"><h2>Dados da empresa</h2><span class="tag ok">Ativa</span></div>
+        <div class="form">
+          <div class="field"><label>Nome da empresa</label><input class="in" value="BR Veículos"><span class="hint">Aparece nos convites e no workspace.</span></div>
+          <div class="f2">
+            <div class="field"><label>Identificador</label><input class="in mono" value="cotaflow-staging-cb1a94a6a8d7" disabled style="color:var(--tx3)"><span class="hint">Não pode ser alterado nesta versão.</span></div>
+            <div class="field"><label>Status da conta</label><input class="in" value="Ativa" disabled style="color:var(--tx3)"><span class="hint">Controlado pela assinatura.</span></div>
+          </div>
+          <div class="f2">
+            <div class="field"><label>Fuso horário</label><select class="in"><option>America/Bahia (GMT-3)</option><option>America/Sao_Paulo</option></select></div>
+            <div class="field"><label>Segmento</label><select class="in"><option>Concessionária / seminovos</option><option>Serviços</option><option>Outro</option></select></div>
+          </div>
+        </div>
+        <div class="ft"><button class="btn pri">Salvar empresa</button></div>
+      </div>
+      <div class="card set" id="set-equipe">
+        <div class="hd"><h2>Funcionários<span>4</span></h2><button class="btn pri">Convidar por magic link</button></div>
+        <div class="member"><div class="av">B</div><div><b>Bruno</b><span>bruno.contatododev@gmail.com</span></div><span class="role">Administrador</span><span class="tag ok">Ativo</span></div>
+        <div class="member"><div class="av">JU</div><div><b>Juliana Costa</b><span>juliana@brveiculos.com.br</span></div><span class="role">Vendedor</span><span class="tag ok">Ativo</span></div>
+        <div class="member"><div class="av">RT</div><div><b>Roberto Tavares</b><span>roberto@brveiculos.com.br</span></div><span class="role">Gestor</span><span class="tag ok">Ativo</span></div>
+        <div class="member"><div class="av">MA</div><div><b>Mariana Alves</b><span>mariana@brveiculos.com.br</span></div><span class="role">Vendedor</span><span class="tag">Convite enviado</span></div>
+      </div>
+      <div class="card set" id="set-cargos">
+        <div class="hd"><h2>Cargos e permissões</h2></div>
+        <div class="perm h"><span>Permissão</span><span class="chk">Admin</span><span class="chk">Gestor</span><span class="chk">Vendedor</span></div>
+        <div class="perm"><span>Ver conversas e CRM</span><span class="chk">✓</span><span class="chk">✓</span><span class="chk">✓</span></div>
+        <div class="perm"><span>Assumir conversa da IA</span><span class="chk">✓</span><span class="chk">✓</span><span class="chk">✓</span></div>
+        <div class="perm"><span>Aprovar exceções comerciais</span><span class="chk">✓</span><span class="chk">✓</span><span class="chk no">—</span></div>
+        <div class="perm"><span>Editar e publicar agentes</span><span class="chk">✓</span><span class="chk">✓</span><span class="chk no">—</span></div>
+        <div class="perm"><span>Gerenciar base de conhecimento</span><span class="chk">✓</span><span class="chk">✓</span><span class="chk no">—</span></div>
+        <div class="perm"><span>Integrações e números</span><span class="chk">✓</span><span class="chk no">—</span><span class="chk no">—</span></div>
+        <div class="perm"><span>Equipe e faturamento</span><span class="chk">✓</span><span class="chk no">—</span><span class="chk no">—</span></div>
+      </div>
+      <div class="card set" id="set-operacao">
+        <div class="hd"><h2>Parâmetros da operação</h2></div>
+        <div class="form">
+          <div class="f2">
+            <div class="field"><label>Desconto máximo sem aprovação</label><input class="in" value="15%"><span class="hint">Acima disso a IA pausa e escala.</span></div>
+            <div class="field"><label>Desconto máximo para frota (4+)</label><input class="in" value="15%"></div>
+          </div>
+          <div class="f2">
+            <div class="field"><label>Tempo sem resposta até follow-up</label><select class="in"><option>2 dias</option><option>1 dia</option><option>3 dias</option></select></div>
+            <div class="field"><label>Tentativas de follow-up</label><select class="in"><option>3</option><option>2</option><option>5</option></select></div>
+          </div>
+          <div class="f2">
+            <div class="field"><label>Ligar por voz quando</label><select class="in"><option>2 follow-ups sem resposta</option><option>Nunca</option><option>Lead pedir</option></select></div>
+            <div class="field"><label>Encerrar lead fora do perfil</label><select class="in"><option>Automaticamente, com motivo</option><option>Pedir confirmação</option></select></div>
+          </div>
+          <label class="switch"><input type="checkbox" checked><i></i>Notificar gestor no WhatsApp quando houver escalada</label>
+        </div>
+        <div class="ft"><button class="btn pri">Salvar parâmetros</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+(function(){
+  var root=document.documentElement,btn=document.getElementById('theme'),btnM=document.getElementById('theme-m');
+  var saved=null;try{saved=localStorage.getItem('cotaflow-theme')}catch(e){}
+  var pref=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
+  var cur=saved||pref;root.setAttribute('data-theme',cur);
+  function toggle(){cur=root.getAttribute('data-theme')==='dark'?'light':'dark';root.setAttribute('data-theme',cur);try{localStorage.setItem('cotaflow-theme',cur)}catch(e){}}
+  btn.addEventListener('click',toggle);btnM.addEventListener('click',toggle);
+
+  var side=document.getElementById('side'),scrim=document.getElementById('scrim'),menu=document.getElementById('menu');
+  function closeMenu(){side.classList.remove('open');scrim.classList.remove('show')}
+  menu.addEventListener('click',function(){var o=!side.classList.contains('open');side.classList.toggle('open',o);scrim.classList.toggle('show',o)});
+  scrim.addEventListener('click',closeMenu);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeMenu()});
+
+  var views=['visao-geral','conversas','crm','agentes','testar','agenda','integracoes','conhecimento','alertas','configuracoes'];
+  var titles={'visao-geral':'Visão geral','conversas':'Conversas','crm':'CRM','agentes':'Agentes','testar':'Testar agente','agenda':'Agenda','integracoes':'Integrações','conhecimento':'Conhecimento','alertas':'Alertas','configuracoes':'Configurações'};
+  function route(){
+    var h=(location.hash||'#visao-geral').slice(1);if(views.indexOf(h)<0)h='visao-geral';
+    views.forEach(function(v){document.getElementById('v-'+v).classList.toggle('on',v===h)});
+    document.querySelectorAll('.nav a').forEach(function(a){a.classList.toggle('on',a.getAttribute('data-view')===h)});
+    document.title='CotaFlow — '+titles[h];window.scrollTo(0,0);closeMenu();
+  }
+  window.addEventListener('hashchange',route);route();
+
+  /* seleção local (visual) */
+  function pick(sel){document.querySelectorAll(sel).forEach(function(b){b.addEventListener('click',function(){var p=b.parentElement;p.querySelectorAll(sel).forEach(function(x){x.classList.remove('on')});b.classList.add('on')})})}
+  pick('.seg button');pick('.tabs button');pick('.steps button');pick('.ib-list .filters button');pick('.conv');pick('.agent-item');pick('.kb-item');
+  document.querySelectorAll('.subnav button').forEach(function(b){b.addEventListener('click',function(){
+    document.querySelectorAll('.subnav button').forEach(function(x){x.classList.remove('on')});b.classList.add('on');
+    document.querySelectorAll('.set').forEach(function(s){s.classList.toggle('on',s.id==='set-'+b.dataset.set)});
+  })});
+})();
+</script>
+
+</body>
+</html>
