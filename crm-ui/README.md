@@ -1,6 +1,6 @@
 # crm-ui
 
-Design system do CotaFlow, no modelo **shadcn/ui**: não é uma dependência
+Design system do VendCota, no modelo **shadcn/ui**: não é uma dependência
 compilada em `node_modules` — o CLI **copia o código-fonte** (componentes
 React/TypeScript + tokens CSS) direto pro seu projeto. Depois de instalado,
 o código é seu: edite, quebre, estenda à vontade, sem precisar dar `eject`
@@ -35,7 +35,7 @@ Por padrão tudo vai para `src/components/crm-ui/{components,screens}`.
 Use `--dir` no `init` pra mudar isso:
 
 ```bash
-npx crm-ui init --dir src/ui/cotaflow
+npx crm-ui init --dir src/ui/vendcota
 ```
 
 ## O que tem no registry
@@ -48,7 +48,7 @@ npx crm-ui init --dir src/ui/cotaflow
 - **`screens-spec`:** Markdown com a composição das outras 8 telas
   (Conversas, Agentes, Testar agente, Agenda, Integrações, Conhecimento,
   Alertas, Configurações), pra um agente de código gerar a partir daqui.
-- **`reference/cotaflow-app.html`:** o mockup original navegável por hash
+- **`reference/vendcota-app.html`:** o mockup original navegável por hash
   (`#conversas`, `#agentes`...) — fonte visual definitiva, pixel a pixel.
 
 ## Documentação visual (link público)
