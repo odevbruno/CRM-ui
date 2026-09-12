@@ -578,13 +578,13 @@ footer.docs-foot{margin-top:48px;padding-top:20px;border-top:1px solid var(--lin
 <script>
 (function(){
   var root=document.documentElement,btn=document.getElementById('theme');
-  var saved=localStorage.getItem('crm-ui-theme');
+  var saved=null;try{saved=localStorage.getItem('crm-ui-theme')}catch(e){}
   var pref=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
   var cur=saved||pref; root.setAttribute('data-theme',cur);
-  btn.addEventListener('click',function(){
+  btn&&btn.addEventListener('click',function(){
     cur=root.getAttribute('data-theme')==='dark'?'light':'dark';
     root.setAttribute('data-theme',cur);
-    localStorage.setItem('crm-ui-theme',cur);
+    try{localStorage.setItem('crm-ui-theme',cur)}catch(e){}
   });
 })();
 </script>

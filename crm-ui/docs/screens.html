@@ -959,7 +959,7 @@ select.in{appearance:none;background-image:linear-gradient(45deg,transparent 50%
   var pref=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
   var cur=saved||pref;root.setAttribute('data-theme',cur);
   function toggle(){cur=root.getAttribute('data-theme')==='dark'?'light':'dark';root.setAttribute('data-theme',cur);try{localStorage.setItem('cotaflow-theme',cur)}catch(e){}}
-  btn.addEventListener('click',toggle);btnM.addEventListener('click',toggle);
+  btn&&btn.addEventListener('click',toggle);btnM&&btnM.addEventListener('click',toggle);
 
   var side=document.getElementById('side'),scrim=document.getElementById('scrim'),menu=document.getElementById('menu');
   function closeMenu(){side.classList.remove('open');scrim.classList.remove('show')}
