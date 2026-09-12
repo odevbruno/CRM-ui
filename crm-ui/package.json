@@ -1,7 +1,7 @@
 {
   "name": "crm-ui",
   "version": "0.1.0",
-  "description": "Design system do CotaFlow — CLI estilo shadcn/ui que copia componentes React/TS/Tailwind (código-fonte editável) para o seu projeto.",
+  "description": "Design system do VendCota — CLI estilo shadcn/ui que copia componentes React/TS/Tailwind (código-fonte editável) para o seu projeto.",
   "bin": {
     "crm-ui": "bin/cli.js"
   },
@@ -19,7 +19,7 @@
     "cli",
     "tailwind",
     "react",
-    "cotaflow"
+    "vendcota"
   ],
   "license": "UNLICENSED",
   "private": false,

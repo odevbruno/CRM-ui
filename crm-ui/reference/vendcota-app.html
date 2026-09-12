@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>CotaFlow — AI Sales OS</title>
+<title>VendCota — AI Sales OS</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -436,12 +436,12 @@ select.in{appearance:none;background-image:linear-gradient(45deg,transparent 50%
 <body>
 <header class="mbar">
   <button class="btn icon" id="menu" aria-label="Abrir menu"><svg class="i" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
-  <div class="brand" style="margin:0;padding:0"><div class="brand-mark"><svg viewBox="0 0 24 24"><path d="M4 12h5l2-5 3 10 2-5h4"/></svg></div><b>CotaFlow</b></div>
+  <div class="brand" style="margin:0;padding:0"><div class="brand-mark"><svg viewBox="0 0 24 24"><path d="M4 12h5l2-5 3 10 2-5h4"/></svg></div><b>VendCota</b></div>
   <button class="btn icon" id="theme-m" aria-label="Alternar tema"><svg class="i" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c0-.5 0-1-.1-1.4A5.5 5.5 0 0 1 12.4 3.1 9 9 0 0 0 12 3z"/></svg></button>
 </header>
 <div class="scrim" id="scrim"></div>
 <aside class="side" id="side">
-  <div class="brand"><div class="brand-mark"><svg viewBox="0 0 24 24"><path d="M4 12h5l2-5 3 10 2-5h4"/></svg></div><b>CotaFlow</b><span>AI Sales OS</span></div>
+  <div class="brand"><div class="brand-mark"><svg viewBox="0 0 24 24"><path d="M4 12h5l2-5 3 10 2-5h4"/></svg></div><b>VendCota</b><span>AI Sales OS</span></div>
   <nav class="nav">
     <a href="#visao-geral" data-view="visao-geral"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Visão geral</a>
     <a href="#conversas" data-view="conversas"><svg class="i" viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/></svg>Conversas<span class="c">17</span></a>
@@ -885,7 +885,7 @@ select.in{appearance:none;background-image:linear-gradient(45deg,transparent 50%
 <section class="view" id="v-configuracoes">
   <div class="pg">
     <div><h1>Configurações</h1><div class="meta">Empresa, equipe, permissões e parâmetros que orientam a operação.</div></div>
-    <div class="right"><span class="chip mono">cotaflow-staging-cb1a94a6a8d7</span></div>
+    <div class="right"><span class="chip mono">vendcota-staging-cb1a94a6a8d7</span></div>
   </div>
   <div class="settings">
     <div class="subnav">
@@ -900,7 +900,7 @@ select.in{appearance:none;background-image:linear-gradient(45deg,transparent 50%
         <div class="form">
           <div class="field"><label>Nome da empresa</label><input class="in" value="BR Veículos"><span class="hint">Aparece nos convites e no workspace.</span></div>
           <div class="f2">
-            <div class="field"><label>Identificador</label><input class="in mono" value="cotaflow-staging-cb1a94a6a8d7" disabled style="color:var(--tx3)"><span class="hint">Não pode ser alterado nesta versão.</span></div>
+            <div class="field"><label>Identificador</label><input class="in mono" value="vendcota-staging-cb1a94a6a8d7" disabled style="color:var(--tx3)"><span class="hint">Não pode ser alterado nesta versão.</span></div>
             <div class="field"><label>Status da conta</label><input class="in" value="Ativa" disabled style="color:var(--tx3)"><span class="hint">Controlado pela assinatura.</span></div>
           </div>
           <div class="f2">
@@ -955,10 +955,10 @@ select.in{appearance:none;background-image:linear-gradient(45deg,transparent 50%
 <script>
 (function(){
   var root=document.documentElement,btn=document.getElementById('theme'),btnM=document.getElementById('theme-m');
-  var saved=null;try{saved=localStorage.getItem('cotaflow-theme')}catch(e){}
+  var saved=null;try{saved=localStorage.getItem('vendcota-theme')}catch(e){}
   var pref=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
   var cur=saved||pref;root.setAttribute('data-theme',cur);
-  function toggle(){cur=root.getAttribute('data-theme')==='dark'?'light':'dark';root.setAttribute('data-theme',cur);try{localStorage.setItem('cotaflow-theme',cur)}catch(e){}}
+  function toggle(){cur=root.getAttribute('data-theme')==='dark'?'light':'dark';root.setAttribute('data-theme',cur);try{localStorage.setItem('vendcota-theme',cur)}catch(e){}}
   btn&&btn.addEventListener('click',toggle);btnM&&btnM.addEventListener('click',toggle);
 
   var side=document.getElementById('side'),scrim=document.getElementById('scrim'),menu=document.getElementById('menu');
@@ -973,7 +973,7 @@ select.in{appearance:none;background-image:linear-gradient(45deg,transparent 50%
     var h=(location.hash||'#visao-geral').slice(1);if(views.indexOf(h)<0)h='visao-geral';
     views.forEach(function(v){document.getElementById('v-'+v).classList.toggle('on',v===h)});
     document.querySelectorAll('.nav a').forEach(function(a){a.classList.toggle('on',a.getAttribute('data-view')===h)});
-    document.title='CotaFlow — '+titles[h];window.scrollTo(0,0);closeMenu();
+    document.title='VendCota — '+titles[h];window.scrollTo(0,0);closeMenu();
   }
   window.addEventListener('hashchange',route);route();
 

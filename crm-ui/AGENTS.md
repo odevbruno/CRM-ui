@@ -1,7 +1,7 @@
 # AGENTS.md — crm-ui
 
 Isto é para VOCÊ, agente de código, quando o Bruno pedir para instalar,
-gerar ou alterar uma tela do CotaFlow usando este pacote.
+gerar ou alterar uma tela do VendCota usando este pacote.
 
 ## Modelo mental
 
@@ -46,7 +46,7 @@ Configurações) só têm a especificação, não o `.tsx`:
 
 1. `npx crm-ui add screens-spec` — isso copia
    `docs/SCREENS_SPEC.md` pro projeto.
-2. Abra `reference/cotaflow-app.html#<nome-da-tela>` (dentro do pacote,
+2. Abra `reference/vendcota-app.html#<nome-da-tela>` (dentro do pacote,
    em `node_modules/crm-ui/reference/`, ou peça pro Bruno já ter essa
    pasta salva em algum lugar do repo) — é a fonte visual definitiva.
 3. Instale os componentes que a spec dessa tela pede
@@ -81,6 +81,6 @@ Configurações) só têm a especificação, não o `.tsx`:
 
 > "Rode `npx crm-ui add screens-spec` e os componentes necessários
 > pra tela `<nome>`. Leia a seção `<nome>` em `docs/SCREENS_SPEC.md` e
-> abra `reference/cotaflow-app.html#<nome>` pra ver o layout definitivo.
+> abra `reference/vendcota-app.html#<nome>` pra ver o layout definitivo.
 > Gere `screens/<Nome>.tsx` só com os componentes de
 > `components/crm-ui`, no mesmo padrão de `VisaoGeral.tsx`."

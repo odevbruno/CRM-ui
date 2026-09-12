@@ -109,7 +109,7 @@ if (cmd === 'init') cmdInit(rest);
 else if (cmd === 'add') cmdAdd(rest);
 else if (cmd === 'list') cmdList();
 else {
-  console.log('crm-ui — CLI do design system CotaFlow\n');
+  console.log('crm-ui — CLI do design system VendCota\n');
   console.log('  npx crm-ui init                 configura tokens + tailwind + crm-ui.json');
   console.log('  npx crm-ui list                  lista componentes e telas disponíveis');
   console.log('  npx crm-ui add <nomes...>         copia componente(s)/tela(s) pro projeto');
